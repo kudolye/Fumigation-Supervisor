@@ -2349,6 +2349,8 @@ a:hover {
   grid-template-columns: 1.15fr 1fr;
   gap: 2rem;
   align-items: start;
+}
+
 .four-checks-grid {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
@@ -2539,12 +2541,14 @@ a:hover {
   z-index: 200;
   opacity: 0;
   visibility: hidden;
+  pointer-events: none;
   transition: all var(--transition-normal);
 }
 
 .drawer-backdrop.open {
   opacity: 1;
   visibility: visible;
+  pointer-events: auto;
 }
 
 .drawer-panel {
