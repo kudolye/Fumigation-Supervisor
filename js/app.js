@@ -1,32 +1,28 @@
 /**
  * Operational Readiness Training for Fumigation Supervisors
- * Application State Engine, Quiz & Scenario Controllers, and Dual Dashboard
+ * Master Application Engine: Stepper Navigation, Domain Practice,
+ * Integrated Scenarios, and Results Screen (Pixel-Matched to Design).
  */
 
 document.addEventListener("DOMContentLoaded", () => {
-  // Global Application State
+  // Application State
   const state = {
     currentView: "hero", // 'hero' | 'role' | 'handbook' | 'quiz' | 'scenarios' | 'dashboard'
-    
-    // Quiz State (Part A)
-    currentQuizIndex: 0,
-    quizAnswers: {}, // { [quizId]: { q1: 'B', q2: 'B', submitted: true, isCorrect: boolean } }
-    
-    // Scenario State (Part B)
-    currentClusterIndex: 0,
-    currentRoundIndex: 0,
-    scenarioAnswers: {}, // { [clusterId_roundNum]: { q1: 'B', q2: 'A', submitted: true, isCorrect: boolean } }
-    
-    // Dashboard preview override
-    dashboardMode: "live", // 'live' | 'criteria-met' | 'review-required'
+    testCompleted: false,
+    historyAccordionOpen: false,
 
-    // Assessment Metrics
-    totalQuestions: 20, // 6 quiz * 2 = 12 + 2 clusters * 2 rounds * 2 questions = 20
-    score: 0,
-    criticalViolations: []
+    // Part A: Domain Practice (6 cases)
+    currentQuizIndex: 0,
+    quizAnswers: {}, // { [id]: { q1, q2, submitted, isCorrect } }
+
+    // Part B: Integrated Scenarios (2 scenarios x 2 rounds)
+    currentScenarioIndex: 0, // 0: Scenario 1, 1: Scenario 2
+    currentRoundIndex: 0,    // 0: Round 1, 1: Round 2
+    scenarioAnswers: {},    // { [scenarioId_round]: { q1, q2, submitted, isCorrect } }
+    scenarioAttempts: { "scenario-1": 1, "scenario-2": 1 }
   };
 
-  // DOM Elements
+  // View Elements
   const views = {
     hero: document.getElementById("view-hero"),
     role: document.getElementById("view-role"),
@@ -36,7 +32,11 @@ document.addEventListener("DOMContentLoaded", () => {
     dashboard: document.getElementById("view-dashboard")
   };
 
-  const navButtons = document.querySelectorAll(".nav-tab-btn");
+  const navStepGuide = document.getElementById("nav-step-guide");
+  const navStepDomain = document.getElementById("nav-step-domain");
+  const navStepScenarios = document.getElementById("nav-step-scenarios");
+  const navStepResults = document.getElementById("nav-step-results");
+
   const handbookDrawer = document.getElementById("handbook-drawer");
   const btnOpenDrawer = document.getElementById("btn-open-drawer");
   const btnCloseDrawer = document.getElementById("btn-close-drawer");
@@ -44,95 +44,231 @@ document.addEventListener("DOMContentLoaded", () => {
   // =========================================================================
   // Navigation & View Routing
   // =========================================================================
+  function isDomainPracticeCompleted() {
+    return QUIZ_QUESTIONS.every((q) => {
+      const ans = state.quizAnswers[q.id];
+      return ans && ans.submitted;
+    });
+  }
+
+  function updateNavLocks() {
+    const domainDone = isDomainPracticeCompleted();
+    if (navStepScenarios) {
+      navStepScenarios.classList.toggle("locked", !domainDone);
+      navStepScenarios.title = domainDone 
+        ? "Go to Integrated Scenarios" 
+        : "Vui lòng hoàn thành tất cả 6 tình huống Domain Practice trước";
+    }
+  }
+
   function switchView(viewName) {
+    if (viewName === "scenarios" && !isDomainPracticeCompleted()) {
+      alert("Bạn cần hoàn thành tất cả 6 tình huống trong Domain Practice trước khi qua phần Scenarios!");
+      switchView("quiz");
+      return;
+    }
+
     state.currentView = viewName;
 
-    // Update active view DOM
+    // Toggle view containers
     Object.keys(views).forEach((key) => {
       if (views[key]) {
         views[key].classList.toggle("active", key === viewName);
       }
     });
 
-    // Update nav buttons
-    navButtons.forEach((btn) => {
-      btn.classList.toggle("active", btn.dataset.view === viewName);
+    // Update Stepper Navigation
+    [navStepGuide, navStepDomain, navStepScenarios, navStepResults].forEach((btn) => {
+      if (btn) btn.classList.remove("active");
     });
 
-    // Window scroll to top
+    if (viewName === "handbook") navStepGuide?.classList.add("active");
+    if (viewName === "quiz") navStepDomain?.classList.add("active");
+    if (viewName === "scenarios") navStepScenarios?.classList.add("active");
+    if (viewName === "dashboard") {
+      navStepResults?.classList.add("active");
+      if (navStepResults) navStepResults.style.display = "inline-flex";
+    }
+
+    updateNavLocks();
+
     window.scrollTo({ top: 0, behavior: "smooth" });
 
-    // Specific view initializations
-    if (viewName === "handbook") {
-      renderHandbookContent();
-    } else if (viewName === "quiz") {
-      renderQuizQuestion(state.currentQuizIndex);
-    } else if (viewName === "scenarios") {
-      renderScenarioRound(state.currentClusterIndex, state.currentRoundIndex);
-    } else if (viewName === "dashboard") {
-      renderDashboard();
-    }
+    // Initializations
+    if (viewName === "handbook") renderHandbookContent();
+    if (viewName === "quiz") renderQuizQuestion(state.currentQuizIndex);
+    if (viewName === "scenarios") renderScenarioRound(state.currentScenarioIndex, state.currentRoundIndex);
+    if (viewName === "dashboard") renderResultsScreen();
   }
 
-  // Header Nav Tab Click Handlers
-  navButtons.forEach((btn) => {
-    btn.addEventListener("click", () => {
-      const targetView = btn.dataset.view;
-      if (targetView) switchView(targetView);
-    });
+  // Stepper Header Buttons
+  navStepGuide?.addEventListener("click", () => switchView("handbook"));
+  navStepDomain?.addEventListener("click", () => switchView("quiz"));
+  navStepScenarios?.addEventListener("click", () => {
+    if (!isDomainPracticeCompleted()) {
+      alert("Bạn cần hoàn thành tất cả 6 tình huống trong Domain Practice trước khi qua phần Scenarios!");
+      return;
+    }
+    switchView("scenarios");
+  });
+  navStepResults?.addEventListener("click", () => switchView("dashboard"));
+
+  // Brand Home trigger
+  document.getElementById("brand-home-trigger")?.addEventListener("click", () => switchView("hero"));
+
+  // Hero & Role Portals
+  document.getElementById("btn-hero-next")?.addEventListener("click", () => switchView("role"));
+  document.getElementById("btn-portal-handbook")?.addEventListener("click", () => switchView("handbook"));
+  document.getElementById("btn-portal-testing")?.addEventListener("click", () => switchView("quiz"));
+
+  // Quick Handbook Drawer triggers
+  btnOpenDrawer?.addEventListener("click", () => handbookDrawer?.classList.add("open"));
+  btnCloseDrawer?.addEventListener("click", () => handbookDrawer?.classList.remove("open"));
+  handbookDrawer?.addEventListener("click", (e) => {
+    if (e.target === handbookDrawer) handbookDrawer.classList.remove("open");
   });
 
-  // Hero Transition ("READY TO START? Click to Next")
-  const btnHeroNext = document.getElementById("btn-hero-next");
-  if (btnHeroNext) {
-    btnHeroNext.addEventListener("click", () => {
-      switchView("role");
-    });
-  }
 
-  // Role Overview Action Portals
-  const btnPortalHandbook = document.getElementById("btn-portal-handbook");
-  const btnPortalTesting = document.getElementById("btn-portal-testing");
-
-  if (btnPortalHandbook) {
-    btnPortalHandbook.addEventListener("click", () => switchView("handbook"));
-  }
-  if (btnPortalTesting) {
-    btnPortalTesting.addEventListener("click", () => switchView("quiz"));
-  }
-
-  // Quick Handbook Slide-over Drawer
-  if (btnOpenDrawer) {
-    btnOpenDrawer.addEventListener("click", () => {
-      handbookDrawer.classList.add("open");
-    });
-  }
-  if (btnCloseDrawer) {
-    btnCloseDrawer.addEventListener("click", () => {
-      handbookDrawer.classList.remove("open");
-    });
-  }
-  handbookDrawer.addEventListener("click", (e) => {
-    if (e.target === handbookDrawer) {
-      handbookDrawer.classList.remove("open");
-    }
-  });
 
   // =========================================================================
-  // Handbook Rendering & Interactivity
+  // Interactive Checklist State & Handler (Handbook Section 7 & Drawer)
+  // =========================================================================
+  const checklistState = {
+    site: [false, false, false, false],
+    equipment: [false, false, false, false],
+    ppe: [false, false, false, false]
+  };
+
+  function updateChecklistUI() {
+    // 1. Update Section 7 Checkboxes if rendered
+    document.querySelectorAll(".checklist-cb").forEach((cb) => {
+      const domain = cb.dataset.domain;
+      const idx = parseInt(cb.dataset.idx, 10);
+      if (domain && !isNaN(idx)) {
+        cb.checked = !!checklistState[domain]?.[idx];
+        cb.closest(".check-item")?.classList.toggle("is-checked", cb.checked);
+      }
+    });
+
+    // 2. Update Drawer Checkboxes
+    document.querySelectorAll(".drawer-cb").forEach((cb) => {
+      const domain = cb.dataset.domain;
+      const idx = parseInt(cb.dataset.idx, 10);
+      if (domain && !isNaN(idx)) {
+        cb.checked = !!checklistState[domain]?.[idx];
+        cb.closest(".check-item")?.classList.toggle("is-checked", cb.checked);
+      }
+    });
+
+    // 3. Calculate Counts
+    const siteCount = checklistState.site.filter(Boolean).length;
+    const equipCount = checklistState.equipment.filter(Boolean).length;
+    const ppeCount = checklistState.ppe.filter(Boolean).length;
+    const totalCount = siteCount + equipCount + ppeCount;
+
+    // 4. Update Badges in Section 7
+    const countBadge = document.getElementById("handbook-checklist-count");
+    if (countBadge) countBadge.textContent = totalCount;
+    const siteBadge = document.getElementById("count-site");
+    if (siteBadge) siteBadge.textContent = `${siteCount}/4`;
+    const equipBadge = document.getElementById("count-equipment");
+    if (equipBadge) equipBadge.textContent = `${equipCount}/4`;
+    const ppeBadge = document.getElementById("count-ppe");
+    if (ppeBadge) ppeBadge.textContent = `${ppeCount}/4`;
+
+    // 5. Update Badges in Drawer
+    const drawerTotalBadge = document.getElementById("drawer-checked-count");
+    if (drawerTotalBadge) drawerTotalBadge.textContent = totalCount;
+    const drawerSite = document.getElementById("drawer-count-site");
+    if (drawerSite) drawerSite.textContent = `${siteCount}/4`;
+    const drawerEquip = document.getElementById("drawer-count-equipment");
+    if (drawerEquip) drawerEquip.textContent = `${equipCount}/4`;
+    const drawerPpe = document.getElementById("drawer-count-ppe");
+    if (drawerPpe) drawerPpe.textContent = `${ppeCount}/4`;
+  }
+
+  function initInteractiveChecklist() {
+    // Attach change listeners to Section 7 checkboxes
+    document.querySelectorAll(".checklist-cb").forEach((cb) => {
+      cb.onchange = () => {
+        const domain = cb.dataset.domain;
+        const idx = parseInt(cb.dataset.idx, 10);
+        if (domain && !isNaN(idx)) {
+          checklistState[domain][idx] = cb.checked;
+          updateChecklistUI();
+        }
+      };
+    });
+
+    // Section 7 toolbar buttons
+    const btnAll = document.getElementById("btn-check-all");
+    if (btnAll) {
+      btnAll.onclick = () => {
+        ["site", "equipment", "ppe"].forEach((dom) => {
+          checklistState[dom] = [true, true, true, true];
+        });
+        updateChecklistUI();
+      };
+    }
+
+    const btnClear = document.getElementById("btn-check-clear");
+    if (btnClear) {
+      btnClear.onclick = () => {
+        ["site", "equipment", "ppe"].forEach((dom) => {
+          checklistState[dom] = [false, false, false, false];
+        });
+        updateChecklistUI();
+      };
+    }
+
+    // Attach change listeners to Drawer checkboxes
+    document.querySelectorAll(".drawer-cb").forEach((cb) => {
+      cb.onchange = () => {
+        const domain = cb.dataset.domain;
+        const idx = parseInt(cb.dataset.idx, 10);
+        if (domain && !isNaN(idx)) {
+          checklistState[domain][idx] = cb.checked;
+          updateChecklistUI();
+        }
+      };
+    });
+
+    // Drawer toolbar buttons
+    const btnDrawerAll = document.getElementById("btn-drawer-check-all");
+    if (btnDrawerAll) {
+      btnDrawerAll.onclick = () => {
+        ["site", "equipment", "ppe"].forEach((dom) => {
+          checklistState[dom] = [true, true, true, true];
+        });
+        updateChecklistUI();
+      };
+    }
+
+    const btnDrawerClear = document.getElementById("btn-drawer-check-clear");
+    if (btnDrawerClear) {
+      btnDrawerClear.onclick = () => {
+        ["site", "equipment", "ppe"].forEach((dom) => {
+          checklistState[dom] = [false, false, false, false];
+        });
+        updateChecklistUI();
+      };
+    }
+
+    updateChecklistUI();
+  }
+
+  // =========================================================================
+  // Handbook Rendering
   // =========================================================================
   function renderHandbookContent() {
     const container = document.getElementById("handbook-sections-container");
     const navList = document.getElementById("handbook-nav-list");
-    if (!container || !navList) return;
-
-    if (container.children.length > 0) return; // already rendered
+    if (!container || !navList || container.children.length > 0) return;
 
     navList.innerHTML = "";
     container.innerHTML = "";
 
     HANDBOOK_DATA.sections.forEach((sec, idx) => {
-      // Sidebar link
       const li = document.createElement("li");
       const a = document.createElement("a");
       a.className = `handbook-nav-link ${idx === 0 ? "active" : ""}`;
@@ -142,13 +278,11 @@ document.addEventListener("DOMContentLoaded", () => {
         e.preventDefault();
         document.querySelectorAll(".handbook-nav-link").forEach((link) => link.classList.remove("active"));
         a.classList.add("active");
-        const target = document.getElementById(sec.id);
-        if (target) target.scrollIntoView({ behavior: "smooth" });
+        document.getElementById(sec.id)?.scrollIntoView({ behavior: "smooth" });
       });
       li.appendChild(a);
       navList.appendChild(li);
 
-      // Section Card
       const card = document.createElement("section");
       card.id = sec.id;
       card.className = "handbook-section-card";
@@ -163,53 +297,36 @@ document.addEventListener("DOMContentLoaded", () => {
       `;
       container.appendChild(card);
     });
+
+    initInteractiveChecklist();
   }
 
   // =========================================================================
-  // Part A: Readiness Decision Quiz Engine
+  // Part A: Domain Practice (3 Domains x 2 Cases)
   // =========================================================================
   function renderQuizQuestion(index) {
     state.currentQuizIndex = index;
     const qData = QUIZ_QUESTIONS[index];
     const container = document.getElementById("quiz-card-container");
-    const ribbon = document.getElementById("quiz-progress-ribbon");
     if (!container || !qData) return;
-
-    // Render Progress Ribbon
-    if (ribbon) {
-      ribbon.innerHTML = QUIZ_QUESTIONS.map((q, i) => {
-        const isAnswered = state.quizAnswers[q.id]?.submitted;
-        const isActive = i === index;
-        return `
-          <button class="prog-item ${isActive ? "active" : ""} ${isAnswered ? "completed" : ""}" data-quiz-idx="${i}">
-            ${i + 1}. ${q.area}
-          </button>
-        `;
-      }).join("");
-
-      ribbon.querySelectorAll(".prog-item").forEach((btn) => {
-        btn.addEventListener("click", () => {
-          renderQuizQuestion(parseInt(btn.dataset.quizIdx, 10));
-        });
-      });
-    }
 
     const currentAnswer = state.quizAnswers[qData.id] || { q1: null, q2: null, submitted: false };
 
     container.innerHTML = `
-      <div class="dossier-header-bar">
-        <span class="tag-area ${qData.tagClass}">${qData.area.toUpperCase()}</span>
-        <span class="dossier-time">CASE ${index + 1} OF ${QUIZ_QUESTIONS.length}</span>
+      <div class="dossier-header-bar" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem;">
+        <span class="tag-area ${qData.tagClass}">${qData.area.toUpperCase()} PRACTICE</span>
+        <span class="dossier-time" style="font-family: var(--font-mono); font-weight: 700; color: #64748b;">
+          CASE ${index + 1} OF ${QUIZ_QUESTIONS.length}
+        </span>
       </div>
 
-      <h3 style="font-size: 1.45rem; font-weight: 800; margin: 0.75rem 0 1.25rem; color: var(--color-text-primary);">
+      <h3 style="font-size: 1.35rem; font-weight: 800; margin: 0.5rem 0 1.25rem; color: var(--color-text-primary);">
         ${qData.title}
       </h3>
 
-      <!-- Field Dossier Card -->
       ${qData.evidenceSnippet}
 
-      <!-- Question 1 (Decision) -->
+      <!-- Question 1: Decision -->
       <div class="question-block" id="q1-block">
         <div class="q-label">Question 1 — Decision</div>
         <div class="q-prompt">${qData.q1.prompt}</div>
@@ -226,7 +343,7 @@ document.addEventListener("DOMContentLoaded", () => {
         </div>
       </div>
 
-      <!-- Question 2 (Next Action) -->
+      <!-- Question 2: Next Action -->
       <div class="question-block" id="q2-block">
         <div class="q-label">Question 2 — Next Action</div>
         <div class="q-prompt">${qData.q2.prompt}</div>
@@ -242,29 +359,27 @@ document.addEventListener("DOMContentLoaded", () => {
         </div>
       </div>
 
-      <!-- Feedback Area (revealed on submit) -->
       <div id="quiz-feedback-mount"></div>
 
-      <!-- Footer Action Controls -->
       <div class="test-actions-footer">
         <button class="btn-secondary" id="btn-quiz-prev" ${index === 0 ? "disabled" : ""}>
           ← Previous Case
         </button>
         <div style="display: flex; gap: 0.75rem;">
           <button class="btn-secondary btn-handbook-quick" id="btn-view-hb-inline">
-            📖 View Handbook Criteria
+            📖 View Guide
           </button>
           <button class="btn-primary" id="btn-quiz-submit" ${currentAnswer.submitted ? "style='display:none;'" : ""}>
             Submit Decision
           </button>
           <button class="btn-primary" id="btn-quiz-next" ${!currentAnswer.submitted ? "style='display:none;'" : ""}>
-            ${index < QUIZ_QUESTIONS.length - 1 ? "Next Case →" : "Proceed to Interactive Scenarios →"}
+            ${index < QUIZ_QUESTIONS.length - 1 ? "Next Case →" : "Advance to Scenarios →"}
           </button>
         </div>
       </div>
     `;
 
-    // Hook up option selections
+    // Bind option selections
     container.querySelectorAll(".option-btn").forEach((btn) => {
       btn.addEventListener("click", () => {
         if (currentAnswer.submitted) return;
@@ -275,7 +390,7 @@ document.addEventListener("DOMContentLoaded", () => {
           currentAnswer.q1 = optId;
           container.querySelectorAll('#q1-options .option-btn').forEach((b) => b.classList.remove("selected"));
           btn.classList.add("selected");
-        } else if (qNum === "2") {
+        } else {
           currentAnswer.q2 = optId;
           container.querySelectorAll('#q2-options .option-btn').forEach((b) => b.classList.remove("selected"));
           btn.classList.add("selected");
@@ -284,66 +399,32 @@ document.addEventListener("DOMContentLoaded", () => {
       });
     });
 
-    // Inline View Handbook trigger
-    const btnViewHbInline = document.getElementById("btn-view-hb-inline");
-    if (btnViewHbInline) {
-      btnViewHbInline.addEventListener("click", () => handbookDrawer.classList.add("open"));
-    }
+    document.getElementById("btn-view-hb-inline")?.addEventListener("click", () => handbookDrawer?.classList.add("open"));
+    document.getElementById("btn-quiz-prev")?.addEventListener("click", () => {
+      if (index > 0) renderQuizQuestion(index - 1);
+    });
 
-    // Previous Button
-    const btnPrev = document.getElementById("btn-quiz-prev");
-    if (btnPrev) {
-      btnPrev.addEventListener("click", () => {
-        if (index > 0) renderQuizQuestion(index - 1);
-      });
-    }
+    document.getElementById("btn-quiz-submit")?.addEventListener("click", () => {
+      if (!currentAnswer.q1 || !currentAnswer.q2) {
+        alert("Please select both a Decision (Question 1) and a Next Action (Question 2) before submitting.");
+        return;
+      }
 
-    // Submit Button
-    const btnSubmit = document.getElementById("btn-quiz-submit");
-    if (btnSubmit) {
-      btnSubmit.addEventListener("click", () => {
-        if (!currentAnswer.q1 || !currentAnswer.q2) {
-          alert("Please select both a Decision (Question 1) and a Next Action (Question 2) before submitting.");
-          return;
-        }
+      const q1Correct = (currentAnswer.q1 === qData.q1.correct);
+      const q2Correct = (currentAnswer.q2 === qData.q2.correct);
+      currentAnswer.submitted = true;
+      currentAnswer.q1Correct = q1Correct;
+      currentAnswer.q2Correct = q2Correct;
+      currentAnswer.isCorrect = q1Correct && q2Correct;
+      state.quizAnswers[qData.id] = currentAnswer;
 
-        currentAnswer.submitted = true;
-        const q1Correct = currentAnswer.q1 === qData.q1.correct;
-        const q2Correct = currentAnswer.q2 === qData.q2.correct;
-        currentAnswer.isCorrect = q1Correct && q2Correct;
-        state.quizAnswers[qData.id] = currentAnswer;
+      renderQuizQuestion(index);
+      updateNavLocks();
+    });
 
-        // Render feedback immediately
-        renderQuizFeedback(qData, currentAnswer);
-
-        // Update Option button styles
-        container.querySelectorAll('#q1-options .option-btn').forEach((btn) => {
-          btn.disabled = true;
-          const opt = btn.dataset.opt;
-          if (opt === qData.q1.correct) btn.classList.add("correct");
-          else if (opt === currentAnswer.q1) btn.classList.add("incorrect");
-        });
-
-        container.querySelectorAll('#q2-options .option-btn').forEach((btn) => {
-          btn.disabled = true;
-          const opt = btn.dataset.opt;
-          if (opt === qData.q2.correct) btn.classList.add("correct");
-          else if (opt === currentAnswer.q2) btn.classList.add("incorrect");
-        });
-
-        btnSubmit.style.display = "none";
-        const btnNext = document.getElementById("btn-quiz-next");
-        if (btnNext) btnNext.style.display = "inline-flex";
-
-        // Update ribbon
-        renderQuizQuestion(index);
-      });
-    }
-
-    // If already submitted, display feedback
+    // If submitted, show feedback & marks
     if (currentAnswer.submitted) {
       renderQuizFeedback(qData, currentAnswer);
-      // Mark options
       container.querySelectorAll('#q1-options .option-btn').forEach((btn) => {
         btn.disabled = true;
         const opt = btn.dataset.opt;
@@ -358,34 +439,49 @@ document.addEventListener("DOMContentLoaded", () => {
       });
     }
 
-    // Next Button
-    const btnNext = document.getElementById("btn-quiz-next");
-    if (btnNext) {
-      btnNext.addEventListener("click", () => {
-        if (index < QUIZ_QUESTIONS.length - 1) {
-          renderQuizQuestion(index + 1);
-        } else {
-          switchView("scenarios");
+    document.getElementById("btn-quiz-next")?.addEventListener("click", () => {
+      if (index < QUIZ_QUESTIONS.length - 1) {
+        renderQuizQuestion(index + 1);
+      } else {
+        if (!isDomainPracticeCompleted()) {
+          alert("Bạn cần hoàn thành tất cả 6 tình huống trong Domain Practice trước khi qua phần Scenarios!");
+          return;
         }
-      });
-    }
+        switchView("scenarios");
+      }
+    });
   }
 
   function renderQuizFeedback(qData, answer) {
     const mount = document.getElementById("quiz-feedback-mount");
     if (!mount) return;
 
-    const isFullyCorrect = answer.q1 === qData.q1.correct && answer.q2 === qData.q2.correct;
+    const q1Ok = !!answer.q1Correct;
+    const q2Ok = !!answer.q2Correct;
+    const bothOk = q1Ok && q2Ok;
+    const partialOk = (q1Ok || q2Ok) && !bothOk;
+    const boxClass = bothOk ? "correct" : (partialOk ? "partial" : "incorrect");
+    const headerTitle = bothOk 
+      ? "✓ DECISION & ACTION VERIFIED: CORRECT" 
+      : (partialOk ? "⚠ PARTIALLY CORRECT (1/2 QUESTIONS)" : "✕ CORRECTION REQUIRED (0/2 QUESTIONS)");
 
     mount.innerHTML = `
-      <div class="feedback-box ${isFullyCorrect ? "correct" : "incorrect"}">
+      <div class="feedback-box ${boxClass}">
         <div class="feedback-header">
-          <span>${isFullyCorrect ? "✓ DECISION VERIFIED: CORRECT" : "⚠ SUPERVISORY CORRECTION REQUIRED"}</span>
+          <span>${headerTitle}</span>
+        </div>
+        <div class="feedback-badge-row">
+          <span class="feedback-badge ${q1Ok ? "ok" : "err"}">
+            ${q1Ok ? "✓ Question 1 (Decision): Correct" : "✕ Question 1 (Decision): Incorrect"}
+          </span>
+          <span class="feedback-badge ${q2Ok ? "ok" : "err"}">
+            ${q2Ok ? "✓ Question 2 (Next Action): Correct" : "✕ Question 2 (Next Action): Incorrect"}
+          </span>
         </div>
         <div class="feedback-body">
           <p><strong>Approved Decision:</strong> ${qData.explanation.decision}</p>
           <p><strong>Approved Next Action:</strong> ${qData.explanation.action}</p>
-          <p style="margin-top: 0.6rem;">${qData.explanation.details}</p>
+          <p style="margin-top: 0.5rem;">${qData.explanation.details}</p>
           <div class="competency-note">
             <strong>Supervisory Focus:</strong> ${qData.explanation.competencyNote}
           </div>
@@ -395,83 +491,47 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   // =========================================================================
-  // Part B: Interactive Scenario Clusters Engine (2 Clusters x 2 Rounds)
+  // Part B: Integrated Scenarios (01 · Evidence mismatches, 02 · Changing conditions)
   // =========================================================================
-  function renderScenarioRound(clusterIdx, roundIdx) {
-    state.currentClusterIndex = clusterIdx;
+  function renderScenarioRound(scenarioIdx, roundIdx) {
+    state.currentScenarioIndex = scenarioIdx;
     state.currentRoundIndex = roundIdx;
 
-    const cluster = SCENARIO_CLUSTERS[clusterIdx];
-    const roundData = cluster.rounds[roundIdx];
+    const scenario = SCENARIO_CLUSTERS[scenarioIdx];
+    const roundData = scenario.rounds[roundIdx];
     const container = document.getElementById("scenario-card-container");
-    const ribbon = document.getElementById("scenario-progress-ribbon");
     if (!container || !roundData) return;
 
-    const answerKey = `${cluster.id}_round${roundData.roundNumber}`;
+    const answerKey = `${scenario.id}_round${roundData.roundNumber}`;
     const currentAnswer = state.scenarioAnswers[answerKey] || { q1: null, q2: null, submitted: false };
 
-    // Render Scenario Ribbon
-    if (ribbon) {
-      ribbon.innerHTML = `
-        <button class="prog-item ${clusterIdx === 0 && roundIdx === 0 ? "active" : ""} ${state.scenarioAnswers["cluster-1_round1"]?.submitted ? "completed" : ""}" data-c="0" data-r="0">
-          Cluster 1: Round 1 (Initial)
-        </button>
-        <button class="prog-item ${clusterIdx === 0 && roundIdx === 1 ? "active" : ""} ${state.scenarioAnswers["cluster-1_round2"]?.submitted ? "completed" : ""}" data-c="0" data-r="1">
-          Cluster 1: Round 2 (Updated)
-        </button>
-        <button class="prog-item ${clusterIdx === 1 && roundIdx === 0 ? "active" : ""} ${state.scenarioAnswers["cluster-2_round1"]?.submitted ? "completed" : ""}" data-c="1" data-r="0">
-          Cluster 2: Round 1 (Initial)
-        </button>
-        <button class="prog-item ${clusterIdx === 1 && roundIdx === 1 ? "active" : ""} ${state.scenarioAnswers["cluster-2_round2"]?.submitted ? "completed" : ""}" data-c="1" data-r="1">
-          Cluster 2: Round 2 (Cleared Site)
-        </button>
-      `;
-
-      ribbon.querySelectorAll(".prog-item").forEach((btn) => {
-        btn.addEventListener("click", () => {
-          renderScenarioRound(parseInt(btn.dataset.c, 10), parseInt(btn.dataset.r, 10));
-        });
-      });
-    }
-
     container.innerHTML = `
-      <!-- Scenario Briefing Header -->
       <div class="scenario-briefing-card">
-        <div class="test-badge">${cluster.id.toUpperCase()}</div>
-        <h3 class="scenario-title">${cluster.title}</h3>
-        <p class="scenario-desc">${cluster.briefing}</p>
+        <h3 class="scenario-title">${scenario.title}</h3>
+        <p class="scenario-desc">${scenario.briefing}</p>
       </div>
 
-      <!-- Round Header Banner -->
       <div class="round-status-banner">
-        <span class="round-title-tag">${roundData.subtitle.toUpperCase()}</span>
-        <span class="dossier-time">EVALUATION STAGE ${roundData.roundNumber} OF 2</span>
+        <span class="round-title-tag">${(roundData.subtitle || "").toUpperCase()}</span>
+        <span class="dossier-time" style="font-family: var(--font-mono); font-weight: 700; color: #64748b;">
+          STAGE ${roundData.roundNumber} OF 2
+        </span>
       </div>
 
-      <!-- Three Preparation Areas Evidence Grid -->
       <div class="evidence-trio-grid">
         ${roundData.areas.map((a) => `
           <div class="evidence-trio-card">
             <div class="trio-card-header">
-              <span class="tag-area ${a.tagClass}">${a.name}</span>
-              <span class="status-badge ${a.statusClass}">${a.status}</span>
+              <span class="tag-area ${a.tagClass || ""}">${a.name || ""}</span>
             </div>
-            <div class="trio-card-body">
-              ${a.details}
-            </div>
+            <div class="trio-card-body">${a.details || ""}</div>
           </div>
         `).join("")}
       </div>
 
-      <!-- Context Callout -->
-      <div class="callout callout-info" style="margin-bottom: 2rem;">
-        <div class="callout-icon">📋</div>
-        <div><strong>Current Authorisation Context:</strong> ${roundData.contextNote}</div>
-      </div>
-
       <!-- Question 1: Decision -->
       <div class="question-block">
-        <div class="q-label">Question 1 — Overall Decision</div>
+        <div class="q-label">Question 1 — Decision</div>
         <div class="q-prompt">${roundData.q1.prompt}</div>
         <div class="options-container" id="scenario-q1-options">
           ${roundData.q1.options.map((opt) => `
@@ -501,26 +561,24 @@ document.addEventListener("DOMContentLoaded", () => {
         </div>
       </div>
 
-      <!-- Feedback Mount -->
       <div id="scenario-feedback-mount"></div>
 
-      <!-- Actions Footer -->
       <div class="test-actions-footer">
         <button class="btn-secondary btn-handbook-quick" id="btn-view-hb-scenario">
-          📖 View Handbook Framework
+          📖 View Framework
         </button>
         <div style="display: flex; gap: 0.75rem;">
           <button class="btn-primary" id="btn-scenario-submit" ${currentAnswer.submitted ? "style='display:none;'" : ""}>
-            Submit Overall Decision
+            Submit Decision
           </button>
           <button class="btn-primary" id="btn-scenario-next" ${!currentAnswer.submitted ? "style='display:none;'" : ""}>
-            ${roundIdx === 0 ? "Advance to Round 2 (Updated Evidence) →" : clusterIdx === 0 ? "Advance to Scenario Cluster 2 →" : "View Final Readiness Dashboard →"}
+            ${roundIdx === 0 ? "Advance to Round 2 →" : scenarioIdx === 0 ? "Advance to Scenario 02 →" : "View Results & Next Steps →"}
           </button>
         </div>
       </div>
     `;
 
-    // Option Selection
+    // Bind option selections
     container.querySelectorAll(".option-btn").forEach((btn) => {
       btn.addEventListener("click", () => {
         if (currentAnswer.submitted) return;
@@ -531,7 +589,7 @@ document.addEventListener("DOMContentLoaded", () => {
           currentAnswer.q1 = optId;
           container.querySelectorAll('#scenario-q1-options .option-btn').forEach((b) => b.classList.remove("selected"));
           btn.classList.add("selected");
-        } else if (qNum === "2") {
+        } else {
           currentAnswer.q2 = optId;
           container.querySelectorAll('#scenario-q2-options .option-btn').forEach((b) => b.classList.remove("selected"));
           btn.classList.add("selected");
@@ -540,55 +598,25 @@ document.addEventListener("DOMContentLoaded", () => {
       });
     });
 
-    // Handbook Drawer trigger
-    const btnViewHbScenario = document.getElementById("btn-view-hb-scenario");
-    if (btnViewHbScenario) {
-      btnViewHbScenario.addEventListener("click", () => handbookDrawer.classList.add("open"));
-    }
+    document.getElementById("btn-view-hb-scenario")?.addEventListener("click", () => handbookDrawer?.classList.add("open"));
 
-    // Submit handler
-    const btnSubmit = document.getElementById("btn-scenario-submit");
-    if (btnSubmit) {
-      btnSubmit.addEventListener("click", () => {
-        if (!currentAnswer.q1 || !currentAnswer.q2) {
-          alert("Please select both your Overall Decision and your Next Action before submitting.");
-          return;
-        }
+    document.getElementById("btn-scenario-submit")?.addEventListener("click", () => {
+      if (!currentAnswer.q1 || !currentAnswer.q2) {
+        alert("Please select both your Decision and your Next Action before submitting.");
+        return;
+      }
 
-        currentAnswer.submitted = true;
-        const q1Correct = currentAnswer.q1 === roundData.q1.correct;
-        const q2Correct = currentAnswer.q2 === roundData.q2.correct;
-        currentAnswer.isCorrect = q1Correct && q2Correct;
-        state.scenarioAnswers[answerKey] = currentAnswer;
+      const q1Correct = (currentAnswer.q1 === roundData.q1.correct);
+      const q2Correct = (currentAnswer.q2 === roundData.q2.correct);
+      currentAnswer.submitted = true;
+      currentAnswer.q1Correct = q1Correct;
+      currentAnswer.q2Correct = q2Correct;
+      currentAnswer.isCorrect = q1Correct && q2Correct;
+      state.scenarioAnswers[answerKey] = currentAnswer;
 
-        // Render feedback immediately
-        renderScenarioFeedback(roundData, currentAnswer);
+      renderScenarioRound(scenarioIdx, roundIdx);
+    });
 
-        // Highlight options
-        container.querySelectorAll('#scenario-q1-options .option-btn').forEach((btn) => {
-          btn.disabled = true;
-          const opt = btn.dataset.opt;
-          if (opt === roundData.q1.correct) btn.classList.add("correct");
-          else if (opt === currentAnswer.q1) btn.classList.add("incorrect");
-        });
-
-        container.querySelectorAll('#scenario-q2-options .option-btn').forEach((btn) => {
-          btn.disabled = true;
-          const opt = btn.dataset.opt;
-          if (opt === roundData.q2.correct) btn.classList.add("correct");
-          else if (opt === currentAnswer.q2) btn.classList.add("incorrect");
-        });
-
-        btnSubmit.style.display = "none";
-        const btnNext = document.getElementById("btn-scenario-next");
-        if (btnNext) btnNext.style.display = "inline-flex";
-
-        // Re-render to update ribbon
-        renderScenarioRound(clusterIdx, roundIdx);
-      });
-    }
-
-    // Feedback if already submitted
     if (currentAnswer.submitted) {
       renderScenarioFeedback(roundData, currentAnswer);
       container.querySelectorAll('#scenario-q1-options .option-btn').forEach((btn) => {
@@ -605,36 +633,49 @@ document.addEventListener("DOMContentLoaded", () => {
       });
     }
 
-    // Next Round/Cluster handler
-    const btnNext = document.getElementById("btn-scenario-next");
-    if (btnNext) {
-      btnNext.addEventListener("click", () => {
-        if (roundIdx === 0) {
-          renderScenarioRound(clusterIdx, 1);
-        } else if (clusterIdx === 0) {
-          renderScenarioRound(1, 0);
-        } else {
-          switchView("dashboard");
-        }
-      });
-    }
+    document.getElementById("btn-scenario-next")?.addEventListener("click", () => {
+      if (roundIdx === 0) {
+        renderScenarioRound(scenarioIdx, 1);
+      } else if (scenarioIdx === 0) {
+        renderScenarioRound(1, 0);
+      } else {
+        state.testCompleted = true;
+        if (navStepResults) navStepResults.style.display = "inline-flex";
+        switchView("dashboard");
+      }
+    });
   }
 
   function renderScenarioFeedback(roundData, answer) {
     const mount = document.getElementById("scenario-feedback-mount");
     if (!mount) return;
 
-    const isFullyCorrect = answer.q1 === roundData.q1.correct && answer.q2 === roundData.q2.correct;
+    const q1Ok = !!answer.q1Correct;
+    const q2Ok = !!answer.q2Correct;
+    const bothOk = q1Ok && q2Ok;
+    const partialOk = (q1Ok || q2Ok) && !bothOk;
+    const boxClass = bothOk ? "correct" : (partialOk ? "partial" : "incorrect");
+    const headerTitle = bothOk 
+      ? "✓ OPERATIONAL DECISION & ACTION CONFIRMED" 
+      : (partialOk ? "⚠ PARTIALLY CORRECT (1/2 QUESTIONS)" : "✕ CORRECTION REQUIRED (0/2 QUESTIONS)");
 
     mount.innerHTML = `
-      <div class="feedback-box ${isFullyCorrect ? "correct" : "incorrect"}">
+      <div class="feedback-box ${boxClass}">
         <div class="feedback-header">
-          <span>${isFullyCorrect ? "✓ OPERATIONAL DECISION CONFIRMED" : "⚠ SUPERVISORY DEFICIENCY DETECTED"}</span>
+          <span>${headerTitle}</span>
+        </div>
+        <div class="feedback-badge-row">
+          <span class="feedback-badge ${q1Ok ? "ok" : "err"}">
+            ${q1Ok ? "✓ Question 1 (Decision): Correct" : "✕ Question 1 (Decision): Incorrect"}
+          </span>
+          <span class="feedback-badge ${q2Ok ? "ok" : "err"}">
+            ${q2Ok ? "✓ Question 2 (Next Action): Correct" : "✕ Question 2 (Next Action): Incorrect"}
+          </span>
         </div>
         <div class="feedback-body">
           <p><strong>Approved Decision:</strong> ${roundData.explanation.decision}</p>
           <p><strong>Approved Next Action:</strong> ${roundData.explanation.action}</p>
-          <p style="margin-top: 0.6rem;">${roundData.explanation.details}</p>
+          <p style="margin-top: 0.5rem;">${roundData.explanation.details}</p>
           <div class="competency-note">
             <strong>Supervisory Focus:</strong> ${roundData.explanation.competencyNote}
           </div>
@@ -644,291 +685,667 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   // =========================================================================
-  // Dual-State Dashboard Engine (Criteria Met & Review Required)
+  // Evaluation Calculation & Exact Pixel-Matched Results Screen
   // =========================================================================
-  function calculateAssessment() {
-    let score = 0;
-    const criticalViolations = [];
+  function getOptionText(options, id) {
+    if (!id || !options) return "Not selected";
+    const found = options.find((o) => o.id === id);
+    return found ? found.text : `Option ${id}`;
+  }
 
-    // Part A scoring (6 quiz questions x 2 parts = 12 total points)
-    QUIZ_QUESTIONS.forEach((q) => {
-      const ans = state.quizAnswers[q.id];
-      if (ans) {
-        if (ans.q1 === q.q1.correct) score++;
-        if (ans.q2 === q.q2.correct) score++;
 
-        // Check Critical No-Go Violations
-        if (q.id === "q2" && ans.q1 !== "C") {
-          criticalViolations.push("Failed to Escalate Missing Site Barrier (Case 2)");
-        }
-        if (q.id === "q6" && ans.q1 !== "C") {
-          criticalViolations.push("Failed to Escalate Missing Protective Equipment (Case 6)");
-        }
-      }
+
+  function calculateLiveEvaluation() {
+    const c1 = state.quizAnswers["q1"] || {};
+    const c2 = state.quizAnswers["q2"] || {};
+    const c3 = state.quizAnswers["q3"] || {};
+    const c4 = state.quizAnswers["q4"] || {};
+    const c5 = state.quizAnswers["q5"] || {};
+    const c6 = state.quizAnswers["q6"] || {};
+
+    const siteCasesMet = (c1.isCorrect ? 1 : 0) + (c2.isCorrect ? 1 : 0);
+    const equipCasesMet = (c3.isCorrect ? 1 : 0) + (c4.isCorrect ? 1 : 0);
+    const ppeCasesMet = (c5.isCorrect ? 1 : 0) + (c6.isCorrect ? 1 : 0);
+    const domainCasesScore = siteCasesMet + equipCasesMet + ppeCasesMet; // out of 6
+
+    const siteQCorrect = (c1.q1Correct ? 1 : 0) + (c1.q2Correct ? 1 : 0) + (c2.q1Correct ? 1 : 0) + (c2.q2Correct ? 1 : 0);
+    const equipQCorrect = (c3.q1Correct ? 1 : 0) + (c3.q2Correct ? 1 : 0) + (c4.q1Correct ? 1 : 0) + (c4.q2Correct ? 1 : 0);
+    const ppeQCorrect = (c5.q1Correct ? 1 : 0) + (c5.q2Correct ? 1 : 0) + (c6.q1Correct ? 1 : 0) + (c6.q2Correct ? 1 : 0);
+    const domainQScore = siteQCorrect + equipQCorrect + ppeQCorrect; // out of 12
+
+    // Scenarios (4 questions each = 8 questions)
+    const s1r1 = state.scenarioAnswers["scenario-1_round1"] || {};
+    const s1r2 = state.scenarioAnswers["scenario-1_round2"] || {};
+    const s2r1 = state.scenarioAnswers["scenario-2_round1"] || {};
+    const s2r2 = state.scenarioAnswers["scenario-2_round2"] || {};
+
+    const scen1QCorrect = (s1r1.q1Correct ? 1 : 0) + (s1r1.q2Correct ? 1 : 0) + (s1r2.q1Correct ? 1 : 0) + (s1r2.q2Correct ? 1 : 0);
+    const scen2QCorrect = (s2r1.q1Correct ? 1 : 0) + (s2r1.q2Correct ? 1 : 0) + (s2r2.q1Correct ? 1 : 0) + (s2r2.q2Correct ? 1 : 0);
+
+    const scen1Pass = (scen1QCorrect === 4);
+    const scen2Pass = (scen2QCorrect === 4);
+    const scenariosMetCount = (scen1Pass ? 1 : 0) + (scen2Pass ? 1 : 0);
+    const scenarioQScore = scen1QCorrect + scen2QCorrect; // out of 8
+
+    // Total questions across entire test: 12 + 8 = 20
+    const totalCorrectQ = domainQScore + scenarioQScore;
+
+    // Critical No-Go Mistakes
+    let criticalMissedCount = 0;
+    if (c2.q1 && c2.q1 !== "C") criticalMissedCount++;
+    if (c6.q1 && c6.q1 !== "C") criticalMissedCount++;
+    if (s2r1.q1 && s2r1.q1 !== "C") criticalMissedCount++;
+
+    // STRICT PASSING RULE CLARIFIED BY USER:
+    // "logic mà sai 1 câu là sai hết là kiểu sai 1 câu trong tất cả chứ không phải sai 1 câu trong 2 câu của 1 case"
+    // To pass: ALL 20 questions across the entire test must be correct!
+    const isPassing = (totalCorrectQ === 20);
+
+    return {
+      isPassing,
+      totalCorrectQ,
+      domainCasesScore,
+      domainQScore,
+      siteCasesMet,
+      siteQCorrect,
+      equipCasesMet,
+      equipQCorrect,
+      ppeCasesMet,
+      ppeQCorrect,
+      scen1Pass,
+      scen2Pass,
+      scen1QCorrect,
+      scen2QCorrect,
+      scenariosMetCount,
+      scenarioQScore,
+      criticalMissedCount,
+      cases: { c1, c2, c3, c4, c5, c6 },
+      scenarioRounds: { s1r1, s1r2, s2r1, s2r2 }
+    };
+  }
+
+  function renderDetailedReviewHistory(answers) {
+    let html = "";
+
+    // 1. Part A: Domain Cases
+    html += `
+      <div class="review-section-header">
+        <span>📋</span>
+        <span>Part A · Domain Practice Cases (6 Cases)</span>
+      </div>
+      <div class="review-cases-grid">
+    `;
+
+    QUIZ_QUESTIONS.forEach((qData, idx) => {
+      const ans = answers.quiz[qData.id] || { q1: null, q2: null, q1Correct: false, q2Correct: false, isCorrect: false };
+      const q1Ok = !!ans.q1Correct;
+      const q2Ok = !!ans.q2Correct;
+      const bothOk = q1Ok && q2Ok;
+      const partialOk = (q1Ok || q2Ok) && !bothOk;
+
+      const cardClass = bothOk ? "pass" : (partialOk ? "partial" : "fail");
+      const badgeClass = bothOk ? "pass" : (partialOk ? "partial" : "fail");
+      const caseStatusLabel = bothOk ? "✓ 2/2 Correct" : (partialOk ? "⚠ 1/2 Correct (Partial)" : "✕ 0/2 Incorrect");
+
+      const userQ1Text = getOptionText(qData.q1.options, ans.q1);
+      const approvedQ1Text = getOptionText(qData.q1.options, qData.q1.correct);
+      const userQ2Text = getOptionText(qData.q2.options, ans.q2);
+      const approvedQ2Text = getOptionText(qData.q2.options, qData.q2.correct);
+
+      html += `
+        <div class="review-case-card ${cardClass}">
+          <div class="review-case-header">
+            <div class="review-case-title-col">
+              <span class="review-case-meta">Case ${idx + 1} · ${qData.area.toUpperCase()}</span>
+              <h4 class="review-case-title">${qData.title}</h4>
+            </div>
+            <span class="case-score-badge ${badgeClass}">${caseStatusLabel}</span>
+          </div>
+
+          <div class="review-q-list">
+            <!-- Question 1 -->
+            <div class="review-q-row ${q1Ok ? "ok" : "err"}">
+              <div class="review-q-meta">
+                <span class="review-q-tag">QUESTION 1 — DECISION</span>
+                <span class="review-q-status-badge ${q1Ok ? "ok" : "err"}">
+                  ${q1Ok ? "✓ Correct" : "✕ Incorrect"}
+                </span>
+              </div>
+              <div class="review-q-prompt">${qData.q1.prompt}</div>
+              <div class="review-q-choices">
+                <div class="ans-line">
+                  <span class="ans-label">Your decision:</span>
+                  <span class="${q1Ok ? "ans-val-green" : "ans-val-red"}">
+                    [${ans.q1 || "—"}] ${userQ1Text}
+                  </span>
+                </div>
+                ${!q1Ok ? `
+                  <div class="ans-line">
+                    <span class="ans-label">Approved decision:</span>
+                    <span class="ans-val-green">
+                      [${qData.q1.correct}] ${approvedQ1Text}
+                    </span>
+                  </div>
+                ` : ""}
+              </div>
+            </div>
+
+            <!-- Question 2 -->
+            <div class="review-q-row ${q2Ok ? "ok" : "err"}">
+              <div class="review-q-meta">
+                <span class="review-q-tag">QUESTION 2 — NEXT ACTION</span>
+                <span class="review-q-status-badge ${q2Ok ? "ok" : "err"}">
+                  ${q2Ok ? "✓ Correct" : "✕ Incorrect"}
+                </span>
+              </div>
+              <div class="review-q-prompt">${qData.q2.prompt}</div>
+              <div class="review-q-choices">
+                <div class="ans-line">
+                  <span class="ans-label">Your next action:</span>
+                  <span class="${q2Ok ? "ans-val-green" : "ans-val-red"}">
+                    [${ans.q2 || "—"}] ${userQ2Text}
+                  </span>
+                </div>
+                ${!q2Ok ? `
+                  <div class="ans-line">
+                    <span class="ans-label">Approved action:</span>
+                    <span class="ans-val-green">
+                      [${qData.q2.correct}] ${approvedQ2Text}
+                    </span>
+                  </div>
+                ` : ""}
+              </div>
+            </div>
+          </div>
+
+          <div class="review-rationale-box">
+            <strong>Supervisory Rule:</strong> ${qData.explanation.details}
+          </div>
+        </div>
+      `;
     });
 
-    // Part B scoring (2 clusters x 2 rounds x 2 questions = 8 total points)
-    SCENARIO_CLUSTERS.forEach((cluster) => {
-      cluster.rounds.forEach((round) => {
-        const key = `${cluster.id}_round${round.roundNumber}`;
-        const ans = state.scenarioAnswers[key];
-        if (ans) {
-          if (ans.q1 === round.q1.correct) score++;
-          if (ans.q2 === round.q2.correct) score++;
+    html += `</div>`;
 
-          // Check Critical Scenario Violations
-          if (key === "cluster-2_round1" && ans.q1 !== "C") {
-            criticalViolations.push("Failed to Escalate Critical Barrier Deficiency in Cluster 2");
-          }
-          if (key === "cluster-2_round2" && ans.q1 === "A") {
-            criticalViolations.push("Prematurely Approved Operation Without Valid Fit-Test Documentation (Cluster 2)");
-          }
-        }
+    // 2. Part B: Integrated Scenarios
+    html += `
+      <div class="review-section-header" style="margin-top: 2rem;">
+        <span>🎯</span>
+        <span>Part B · Integrated Scenarios (4 Stages)</span>
+      </div>
+      <div class="review-cases-grid">
+    `;
+
+    SCENARIO_CLUSTERS.forEach((scen) => {
+      scen.rounds.forEach((round) => {
+        const answerKey = `${scen.id}_round${round.roundNumber}`;
+        const ans = answers.scenarios[answerKey] || { q1: null, q2: null, q1Correct: false, q2Correct: false, isCorrect: false };
+        const q1Ok = !!ans.q1Correct;
+        const q2Ok = !!ans.q2Correct;
+        const bothOk = q1Ok && q2Ok;
+        const partialOk = (q1Ok || q2Ok) && !bothOk;
+
+        const cardClass = bothOk ? "pass" : (partialOk ? "partial" : "fail");
+        const badgeClass = bothOk ? "pass" : (partialOk ? "partial" : "fail");
+        const caseStatusLabel = bothOk ? "✓ 2/2 Correct" : (partialOk ? "⚠ 1/2 Correct (Partial)" : "✕ 0/2 Incorrect");
+
+        const userQ1Text = getOptionText(round.q1.options, ans.q1);
+        const approvedQ1Text = getOptionText(round.q1.options, round.q1.correct);
+        const userQ2Text = getOptionText(round.q2.options, ans.q2);
+        const approvedQ2Text = getOptionText(round.q2.options, round.q2.correct);
+
+        html += `
+          <div class="review-case-card ${cardClass}">
+            <div class="review-case-header">
+              <div class="review-case-title-col">
+                <span class="review-case-meta">Scenario ${scen.code} · Stage ${round.roundNumber} of 2</span>
+                <h4 class="review-case-title">${scen.title} — ${round.subtitle}</h4>
+              </div>
+              <span class="case-score-badge ${badgeClass}">${caseStatusLabel}</span>
+            </div>
+
+            <div class="review-q-list">
+              <!-- Question 1 -->
+              <div class="review-q-row ${q1Ok ? "ok" : "err"}">
+                <div class="review-q-meta">
+                  <span class="review-q-tag">QUESTION 1 — DECISION</span>
+                  <span class="review-q-status-badge ${q1Ok ? "ok" : "err"}">
+                    ${q1Ok ? "✓ Correct" : "✕ Incorrect"}
+                  </span>
+                </div>
+                <div class="review-q-prompt">${round.q1.prompt}</div>
+                <div class="review-q-choices">
+                  <div class="ans-line">
+                    <span class="ans-label">Your decision:</span>
+                    <span class="${q1Ok ? "ans-val-green" : "ans-val-red"}">
+                      [${ans.q1 || "—"}] ${userQ1Text}
+                    </span>
+                  </div>
+                  ${!q1Ok ? `
+                    <div class="ans-line">
+                      <span class="ans-label">Approved decision:</span>
+                      <span class="ans-val-green">
+                        [${round.q1.correct}] ${approvedQ1Text}
+                      </span>
+                    </div>
+                  ` : ""}
+                </div>
+              </div>
+
+              <!-- Question 2 -->
+              <div class="review-q-row ${q2Ok ? "ok" : "err"}">
+                <div class="review-q-meta">
+                  <span class="review-q-tag">QUESTION 2 — NEXT ACTION</span>
+                  <span class="review-q-status-badge ${q2Ok ? "ok" : "err"}">
+                    ${q2Ok ? "✓ Correct" : "✕ Incorrect"}
+                  </span>
+                </div>
+                <div class="review-q-prompt">${round.q2.prompt}</div>
+                <div class="review-q-choices">
+                  <div class="ans-line">
+                    <span class="ans-label">Your next action:</span>
+                    <span class="${q2Ok ? "ans-val-green" : "ans-val-red"}">
+                      [${ans.q2 || "—"}] ${userQ2Text}
+                    </span>
+                  </div>
+                  ${!q2Ok ? `
+                    <div class="ans-line">
+                      <span class="ans-label">Approved action:</span>
+                      <span class="ans-val-green">
+                        [${round.q2.correct}] ${approvedQ2Text}
+                      </span>
+                    </div>
+                  ` : ""}
+                </div>
+              </div>
+            </div>
+
+            <div class="review-rationale-box">
+              <strong>Supervisory Rule:</strong> ${round.explanation.details}
+            </div>
+          </div>
+        `;
       });
     });
 
-    const percent = Math.round((score / state.totalQuestions) * 100);
-    // Passing criteria: >= 80% AND 0 Critical Violations
-    const isPassing = percent >= 80 && criticalViolations.length === 0;
-
-    return { score, total: state.totalQuestions, percent, criticalViolations, isPassing };
+    html += `</div>`;
+    html += `
+      <div class="review-footer-action-row" style="display: flex; justify-content: flex-end; align-items: center; gap: 1rem; margin-top: 2rem; padding-top: 1.5rem; border-top: 1px dashed #cbd5e1;">
+        <span style="font-size: 0.85rem; color: #64748b; font-weight: 500;">Ready to retake? Clear decisions and start over:</span>
+        <button class="btn-retake-header" id="btn-retake-history">
+          <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M1 4v6h6M23 20v-6h-6"/>
+            <path d="M20.49 9A9 9 0 0 0 5.64 5.64L1 10m22 4l-4.64 4.36A9 9 0 0 1 3.51 15"/>
+          </svg>
+          <span>Retake practice</span>
+        </button>
+      </div>
+    `;
+    return html;
   }
 
-  function renderDashboard() {
+  function renderResultsScreen() {
     const container = document.getElementById("dashboard-content-mount");
     if (!container) return;
 
-    const calc = calculateAssessment();
+    const live = calculateLiveEvaluation();
+    const isPassing = live.isPassing;
+    const totalCorrectQ = live.totalCorrectQ;
+    const domainCasesScore = live.domainCasesScore;
+    const domainQScore = live.domainQScore;
+    const siteCasesMet = live.siteCasesMet;
+    const siteQCorrect = live.siteQCorrect;
+    const equipCasesMet = live.equipCasesMet;
+    const equipQCorrect = live.equipQCorrect;
+    const ppeCasesMet = live.ppeCasesMet;
+    const ppeQCorrect = live.ppeQCorrect;
+    const scen1Pass = live.scen1Pass;
+    const scen2Pass = live.scen2Pass;
+    const scen1QCorrect = live.scen1QCorrect;
+    const scen2QCorrect = live.scen2QCorrect;
+    const scenariosMetCount = live.scenariosMetCount;
+    const criticalMissedCount = live.criticalMissedCount;
+    const reviewAnswers = {
+      quiz: state.quizAnswers,
+      scenarios: state.scenarioAnswers
+    };
+    const casesObj = live.cases;
 
-    let displayState = "met";
-    if (state.dashboardMode === "criteria-met") {
-      displayState = "met";
-    } else if (state.dashboardMode === "review-required") {
-      displayState = "review";
-    } else {
-      displayState = calc.isPassing ? "met" : "review";
-    }
+    const statusTitle = isPassing ? "Criteria met" : "Review required";
+    const statusPill = isPassing ? "Ready to authorize" : "Action required";
+    const statusDesc = isPassing
+      ? "All 20/20 questions verified. Zero unresolved readiness requirements across all domains."
+      : `${20 - totalCorrectQ} requirement(s) unresolved (${totalCorrectQ}/20 correct). Re-assessment required before supervisory authorization.`;
+
+    const c1 = casesObj.c1 || {};
+    const c2 = casesObj.c2 || {};
+    const c3 = casesObj.c3 || {};
+    const c4 = casesObj.c4 || {};
+    const c5 = casesObj.c5 || {};
+    const c6 = casesObj.c6 || {};
+
+    const historyCardsHtml = renderDetailedReviewHistory(reviewAnswers);
 
     container.innerHTML = `
-      <!-- Mode Switcher Pill -->
-      <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem; margin-bottom: 1.5rem;">
-        <div class="dashboard-mode-switcher">
-          <button class="mode-toggle-btn ${state.dashboardMode === "live" ? "active" : ""}" data-mode="live">
-            Live Assessment Result (${calc.percent}%)
-          </button>
-          <button class="mode-toggle-btn ${state.dashboardMode === "criteria-met" ? "active" : ""}" data-mode="criteria-met">
-            Preview: Criteria Met (Passing)
-          </button>
-          <button class="mode-toggle-btn ${state.dashboardMode === "review-required" ? "active" : ""}" data-mode="review-required">
-            Preview: Review Required (Failed)
-          </button>
+      <!-- Header Row -->
+      <div class="results-header-row">
+        <div>
+          <div class="results-super-tag">YOUR LEARNING SUMMARY</div>
+          <h1 class="results-main-title">Your results & next steps</h1>
+          <p class="results-subtitle">See your progress. Take the key decisions with you.</p>
         </div>
-        <div style="font-family: var(--font-mono); font-size: 0.8rem; color: var(--color-text-muted);">
-          TIMESTAMP: ${new Date().toISOString().replace("T", " ").substring(0, 19)} UTC
-        </div>
-      </div>
-
-      ${displayState === "met" ? renderCriteriaMetCard(calc) : renderReviewRequiredCard(calc)}
-    `;
-
-    // Bind mode toggle buttons
-    container.querySelectorAll(".mode-toggle-btn").forEach((btn) => {
-      btn.addEventListener("click", () => {
-        state.dashboardMode = btn.dataset.mode;
-        renderDashboard();
-      });
-    });
-
-    // Bind Print Button
-    const btnPrint = document.getElementById("btn-print-cert");
-    if (btnPrint) {
-      btnPrint.addEventListener("click", () => window.print());
-    }
-
-    // Bind Retake Assessment Button
-    const btnRetake = document.getElementById("btn-retake-training");
-    if (btnRetake) {
-      btnRetake.addEventListener("click", () => {
-        if (confirm("Reset current assessment scores and restart from Case 1?")) {
-          state.quizAnswers = {};
-          state.scenarioAnswers = {};
-          state.currentQuizIndex = 0;
-          state.currentClusterIndex = 0;
-          state.currentRoundIndex = 0;
-          state.dashboardMode = "live";
-          switchView("quiz");
-        }
-      });
-    }
-
-    // Bind Handbook Review Button
-    const btnReviewHb = document.getElementById("btn-dashboard-handbook");
-    if (btnReviewHb) {
-      btnReviewHb.addEventListener("click", () => switchView("handbook"));
-    }
-  }
-
-  function renderCriteriaMetCard(calc) {
-    const certCode = "OP-VER-" + Math.random().toString(36).substring(2, 8).toUpperCase() + "-2026";
-    const scoreVal = state.dashboardMode === "criteria-met" ? "100%" : `${calc.percent}%`;
-    const scoreFraction = state.dashboardMode === "criteria-met" ? "20 / 20" : `${calc.score} / ${calc.total}`;
-
-    return `
-      <div class="dashboard-card-met">
-        <div class="cert-header">
-          <div class="cert-emblem">✓</div>
-          <div class="cert-title-col">
-            <div class="cert-subhead">SUPERVISORY READINESS CERTIFICATION</div>
-            <h2 class="cert-main-title">Operational Criteria Met — Verification Authority Granted</h2>
-            <p style="color: var(--color-text-secondary); font-size: 0.95rem; margin-top: 0.35rem;">
-              The candidate has demonstrated full competence in pre-start cross-checking, site verification, equipment serialization, respirator readiness, and formal escalation procedures.
-            </p>
+        <div class="results-header-actions" style="display: flex; flex-direction: column; align-items: flex-end; gap: 0.65rem;">
+          <div class="results-learner-badge">
+            Demo learner · Supervisor
           </div>
-          <div class="cert-serial-tag">
-            VERIFICATION ID:<br>
-            <strong style="color: var(--color-primary-green); font-size: 0.95rem;">${certCode}</strong>
-          </div>
-        </div>
-
-        <!-- Metrics Row -->
-        <div class="metrics-row">
-          <div class="metric-card">
-            <div class="metric-label">Overall Readiness Score</div>
-            <div class="metric-val pass">${scoreVal}</div>
-            <span style="font-size: 0.75rem; color: var(--color-text-muted);">${scoreFraction} Criteria Verified</span>
-          </div>
-          <div class="metric-card">
-            <div class="metric-label">Site Verification</div>
-            <div class="metric-val pass">100%</div>
-            <span style="font-size: 0.75rem; color: var(--color-text-muted);">Layout & Controls Verified</span>
-          </div>
-          <div class="metric-card">
-            <div class="metric-label">Equipment Checks</div>
-            <div class="metric-val pass">100%</div>
-            <span style="font-size: 0.75rem; color: var(--color-text-muted);">Serials & Calibration Valid</span>
-          </div>
-          <div class="metric-card">
-            <div class="metric-label">Escalation Protocol</div>
-            <div class="metric-val pass">0 Failures</div>
-            <span style="font-size: 0.75rem; color: var(--color-text-muted);">Zero Premature Starts</span>
-          </div>
-        </div>
-
-        <!-- Competency Statement -->
-        <div class="cert-statement-box">
-          <strong>Official Operational Finding:</strong> The supervisor correctly recognized that both <em>Hold for Verification</em> and <em>Do Not Start & Escalate</em> forbid operation initiation until physical verification is complete. The candidate resisted schedule pressure, refused verbal promises in place of inspection records, and successfully held operations on Cluster 2 Round 2 when unverified wearer documentation remained unresolved.
-        </div>
-
-        <!-- Sign-off Block -->
-        <div class="signoff-row">
-          <div class="sig-block">
-            <span class="sig-name">CHIEF OPERATIONAL SAFETY AUDITOR</span>
-            <span class="sig-role">Fumigation Safety Board & Chemical Control Division</span>
-          </div>
-          <div class="sig-block" style="text-align: right;">
-            <span class="sig-name">SUPERVISOR READINESS STATUS</span>
-            <span class="status-badge ready" style="margin-left: auto;">CERTIFIED READY TO SUPERVISE</span>
-          </div>
-        </div>
-
-        <div class="dashboard-actions" style="margin-top: 2rem;">
-          <button class="btn-secondary" id="btn-dashboard-handbook">
-            📖 Return to Handbook
-          </button>
-          <button class="btn-primary" id="btn-print-cert">
-            🖨️ Print / Save Official Certificate
+          <button class="btn-retake-header" id="btn-retake-header">
+            <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M1 4v6h6M23 20v-6h-6"/>
+              <path d="M20.49 9A9 9 0 0 0 5.64 5.64L1 10m22 4l-4.64 4.36A9 9 0 0 1 3.51 15"/>
+            </svg>
+            <span>Retake practice</span>
           </button>
         </div>
       </div>
-    `;
-  }
 
-  function renderReviewRequiredCard(calc) {
-    const scoreVal = state.dashboardMode === "review-required" ? "55%" : `${calc.percent}%`;
-    const scoreFraction = state.dashboardMode === "review-required" ? "11 / 20" : `${calc.score} / ${calc.total}`;
-    const violations = state.dashboardMode === "review-required" 
-      ? [
-          "Failed to Escalate Missing Site Barrier (Case 2)",
-          "Accepted Unverified Worker Statement in Place of Fit-Test (Cluster 2 Round 2)",
-          "Conflated Partial Verification with Full Operation Start Release"
-        ]
-      : (calc.criticalViolations.length > 0 ? calc.criticalViolations : ["Readiness Score Below Required 80% Threshold"]);
-
-    return `
-      <div class="dashboard-card-review">
-        <div class="review-header">
-          <div class="review-emblem">⚠️</div>
-          <div class="review-title-col">
-            <div class="review-subhead">SUPERVISORY READINESS AUDIT: ACTION REQUIRED</div>
-            <h3>Operational Readiness Unverified — Review Required</h3>
-            <p style="color: var(--color-text-secondary); font-size: 0.95rem; margin-top: 0.45rem;">
-              The supervisor assessment did not meet the mandatory criteria required to authorize pre-start fumigation. Critical safety gaps or unverified assumptions were identified during the review.
-            </p>
+      <!-- Top Status Banner -->
+      <div class="results-status-banner ${!isPassing ? "review-state" : ""}">
+        <div class="status-banner-left">
+          <div class="status-circle-icon">
+            ${isPassing ? "✓" : "⚠️"}
+          </div>
+          <div class="status-text-group">
+            <div class="status-title-row">
+              <span class="status-main-heading">${statusTitle}</span>
+              <span class="status-pill-subtag">${statusPill}</span>
+            </div>
+            <span class="status-sub-desc">${statusDesc}</span>
           </div>
         </div>
-
-        <!-- Metrics Row -->
-        <div class="metrics-row">
-          <div class="metric-card">
-            <div class="metric-label">Assessment Score</div>
-            <div class="metric-val alert">${scoreVal}</div>
-            <span style="font-size: 0.75rem; color: var(--color-text-muted);">${scoreFraction} Criteria Met</span>
-          </div>
-          <div class="metric-card">
-            <div class="metric-label">Passing Standard</div>
-            <div class="metric-val" style="color: var(--color-text-primary);">80%</div>
-            <span style="font-size: 0.75rem; color: var(--color-text-muted);">Required Passing Benchmark</span>
-          </div>
-          <div class="metric-card">
-            <div class="metric-label">Critical Safety Breaches</div>
-            <div class="metric-val alert">${violations.length}</div>
-            <span style="font-size: 0.75rem; color: var(--color-text-muted);">Zero Tolerance Allowed</span>
-          </div>
-          <div class="metric-card">
-            <div class="metric-label">Operational Authority</div>
-            <div class="status-badge stop" style="margin-top: 0.5rem; font-size: 0.75rem;">AUTHORITY WITHHELD</div>
-            <span style="font-size: 0.75rem; color: var(--color-text-muted); display: block; margin-top: 0.35rem;">Re-training Mandatory</span>
-          </div>
+        <div class="status-banner-right">
+          <span class="activities-completed-tag">
+            <span style="color: ${isPassing ? "#15803d" : "#d97706"};">${isPassing ? "✓" : "⚠️"}</span>
+            ${isPassing ? "All activities completed" : `${totalCorrectQ}/20 questions correct`}
+          </span>
+          <span class="activities-sub-meta">6 practice cases · 2 scenarios</span>
         </div>
+      </div>
 
-        <!-- Deficiencies Identified -->
-        <div class="findings-list">
-          <div class="findings-title">Identified Operational Vulnerabilities:</div>
-          ${violations.map((item) => `
-            <div class="finding-item">
-              <span class="finding-icon">✕</span>
+      <!-- Two-Column Cards Grid -->
+      <div class="results-two-col-grid">
+        
+        <!-- Left: Part A Domain Practice -->
+        <div class="eval-card">
+          <div>
+            <div class="eval-card-header">
               <div>
-                <strong>${item}</strong>
-                <p style="font-size: 0.85rem; color: #94a3b8; margin-top: 0.2rem;">
-                  Fumigation gas introduction under this condition presents severe toxic exposure risk to personnel and uncontained public exposure hazards.
-                </p>
+                <div class="eval-card-pretag">PART A · FIRST ATTEMPT</div>
+                <h3 class="eval-card-title">Domain practice</h3>
+              </div>
+              <div class="eval-big-score">${domainCasesScore} / 6</div>
+            </div>
+
+            <div class="domain-metrics-list">
+              <!-- Site conditions -->
+              <div class="domain-metric-row">
+                <span class="domain-name">Site conditions</span>
+                <div class="segmented-bar">
+                  <div class="segment-pill" title="Case 1: Q1 ${c1.q1Correct ? "✓" : "✕"}, Q2 ${c1.q2Correct ? "✓" : "✕"}">
+                    <span class="sub-pill ${c1.q1Correct ? "pass" : ""}"></span>
+                    <span class="sub-pill ${c1.q2Correct ? "pass" : ""}"></span>
+                  </div>
+                  <div class="segment-pill" title="Case 2: Q1 ${c2.q1Correct ? "✓" : "✕"}, Q2 ${c2.q2Correct ? "✓" : "✕"}">
+                    <span class="sub-pill ${c2.q1Correct ? "pass" : ""}"></span>
+                    <span class="sub-pill ${c2.q2Correct ? "pass" : ""}"></span>
+                  </div>
+                </div>
+                <span class="domain-score-frac">
+                  ${siteCasesMet}/2 ${siteQCorrect < 4 ? `<span class="sub-q-count">(${siteQCorrect}/4 q)</span>` : `<span class="sub-q-count">(4/4 q)</span>`}
+                </span>
+              </div>
+
+              <!-- Equipment -->
+              <div class="domain-metric-row">
+                <span class="domain-name">Equipment</span>
+                <div class="segmented-bar">
+                  <div class="segment-pill" title="Case 3: Q1 ${c3.q1Correct ? "✓" : "✕"}, Q2 ${c3.q2Correct ? "✓" : "✕"}">
+                    <span class="sub-pill ${c3.q1Correct ? "pass" : ""}"></span>
+                    <span class="sub-pill ${c3.q2Correct ? "pass" : ""}"></span>
+                  </div>
+                  <div class="segment-pill" title="Case 4: Q1 ${c4.q1Correct ? "✓" : "✕"}, Q2 ${c4.q2Correct ? "✓" : "✕"}">
+                    <span class="sub-pill ${c4.q1Correct ? "pass" : ""}"></span>
+                    <span class="sub-pill ${c4.q2Correct ? "pass" : ""}"></span>
+                  </div>
+                </div>
+                <span class="domain-score-frac">
+                  ${equipCasesMet}/2 ${equipQCorrect < 4 ? `<span class="sub-q-count">(${equipQCorrect}/4 q)</span>` : `<span class="sub-q-count">(4/4 q)</span>`}
+                </span>
+              </div>
+
+              <!-- PPE / respirator -->
+              <div class="domain-metric-row">
+                <span class="domain-name">PPE / respirator</span>
+                <div class="segmented-bar">
+                  <div class="segment-pill" title="Case 5: Q1 ${c5.q1Correct ? "✓" : "✕"}, Q2 ${c5.q2Correct ? "✓" : "✕"}">
+                    <span class="sub-pill ${c5.q1Correct ? "pass" : ""}"></span>
+                    <span class="sub-pill ${c5.q2Correct ? "pass" : ""}"></span>
+                  </div>
+                  <div class="segment-pill" title="Case 6: Q1 ${c6.q1Correct ? "✓" : "✕"}, Q2 ${c6.q2Correct ? "✓" : "✕"}">
+                    <span class="sub-pill ${c6.q1Correct ? "pass" : ""}"></span>
+                    <span class="sub-pill ${c6.q2Correct ? "pass" : ""}"></span>
+                  </div>
+                </div>
+                <span class="domain-score-frac">
+                  ${ppeCasesMet}/2 ${ppeQCorrect < 4 ? `<span class="sub-q-count">(${ppeQCorrect}/4 q)</span>` : `<span class="sub-q-count">(4/4 q)</span>`}
+                </span>
               </div>
             </div>
-          `).join("")}
+          </div>
+
+          <div class="eval-card-footer-note">
+            A case counts when both Decision and Next Action are correct. Practice scores do not determine the overall result.
+          </div>
         </div>
 
-        <!-- Remediation Plan -->
-        <div class="remediation-plan">
-          <h4>Required Remediation Roadmap:</h4>
-          <p>
-            1. Re-read <strong>Section 3 (Readiness Framework)</strong> to master the differences between <em>Hold for Verification</em> and <em>Do Not Start & Escalate</em>.<br>
-            2. Re-visit <strong>Section 4 & 6</strong> regarding physical barrier verification and quantitative respirator fit-test records.<br>
-            3. Remember: Verbal assurances ("we will install it later" or "I used it yesterday") are NEVER acceptable verification evidence.
-          </p>
+        <!-- Right: Part B Integrated Scenarios -->
+        <div class="eval-card">
+          <div>
+            <div class="eval-card-header">
+              <div>
+                <div class="eval-card-pretag">PART B · LATEST ATTEMPTS</div>
+                <h3 class="eval-card-title">Integrated scenarios</h3>
+              </div>
+              <div class="eval-big-score">${scenariosMetCount}/2 met</div>
+            </div>
+
+            <div class="scenario-metrics-list">
+              <!-- Scenario 01 -->
+              <div class="scenario-metric-item">
+                <div class="scen-col-left">
+                  <h5>01 · Evidence mismatches</h5>
+                  <div class="scen-attempt-meta">${scen1Pass ? "1 attempt · Met on attempt (4/4 q)" : `1 attempt · ${scen1QCorrect}/4 questions correct`}</div>
+                </div>
+                <div class="scen-status-pill ${scen1Pass ? "" : "review"}">
+                  ${scen1Pass ? "✓ Criteria met" : "✕ Review required"}
+                </div>
+              </div>
+
+              <!-- Scenario 02 -->
+              <div class="scenario-metric-item">
+                <div class="scen-col-left">
+                  <h5>02 · Changing conditions</h5>
+                  <div class="scen-attempt-meta">${scen2Pass ? "1 attempt · Met on attempt (4/4 q)" : `1 attempt · ${scen2QCorrect}/4 questions correct`}</div>
+                </div>
+                <div class="scen-status-pill ${scen2Pass ? "" : "review"}">
+                  ${scen2Pass ? "✓ Criteria met" : "✕ Review required"}
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="critical-nogo-bar ${criticalMissedCount > 0 ? "alert-state" : ""}">
+            <span class="nogo-label">Critical no-go conditions missed</span>
+            <span class="nogo-val">${criticalMissedCount > 0 ? `${criticalMissedCount} critical rule(s) breached` : "0 critical rules breached"}</span>
+          </div>
         </div>
 
-        <div class="dashboard-actions">
-          <button class="btn-secondary" id="btn-dashboard-handbook">
-            📖 Study Handbook Guidance
+      </div>
+
+      <!-- Collapsible Decisions & Attempt History -->
+      <div class="accordion-history-wrapper ${state.historyAccordionOpen ? "open" : ""}" id="history-accordion">
+        <button class="accordion-trigger-btn" id="btn-toggle-history">
+          <div class="accordion-title-left">
+            <span>🕒</span>
+            <span>Review your decisions & attempt history</span>
+          </div>
+          <span class="accordion-chevron">∨</span>
+        </button>
+        <div class="accordion-content-body">
+          <div class="review-top-banner">
+            <div class="review-stat-col">
+              <span class="review-stat-number">${totalCorrectQ} / 20</span>
+              <span class="review-stat-label">Total Questions Correct</span>
+            </div>
+            ${isPassing ? `
+              <span class="review-top-badge ok">✓ Criteria Met · 20/20 Passed</span>
+            ` : `
+              <span class="review-top-badge action">⚠️ Action Required (${20 - totalCorrectQ} Unresolved)</span>
+            `}
+          </div>
+          ${historyCardsHtml}
+        </div>
+      </div>
+
+      <!-- Bottom Section: Four Checks to Remember -->
+      <section class="next-shift-section">
+        <div class="next-shift-supertag">TAKE IT INTO YOUR NEXT SHIFT</div>
+        <div class="next-shift-title-row">
+          <h2 class="next-shift-main-title">Four checks to remember</h2>
+          <span class="bookmark-ribbon-icon">🔖</span>
+        </div>
+
+        <div class="next-shift-grid">
+          <!-- Left: 4 numbered checks -->
+          <div class="four-checks-list">
+            <div class="four-check-item">
+              <span class="check-num-badge">01</span>
+              <div class="check-item-text-col">
+                <strong>Check all three domains</strong>
+                <p>Site conditions, equipment and PPE / respirator. One ready domain does not clear the whole job.</p>
+              </div>
+            </div>
+
+            <div class="four-check-item">
+              <span class="check-num-badge">02</span>
+              <div class="check-item-text-col">
+                <strong>Match the evidence</strong>
+                <p>Confirm the current job, equipment ID, assigned wearer and required readiness status.</p>
+              </div>
+            </div>
+
+            <div class="four-check-item">
+              <span class="check-num-badge">03</span>
+              <div class="check-item-text-col">
+                <strong>Classify before you decide</strong>
+                <p>Distinguish unverified evidence from confirmed failure. Apply the approved hold or escalation rule.</p>
+              </div>
+            </div>
+
+            <div class="four-check-item">
+              <span class="check-num-badge">04</span>
+              <div class="check-item-text-col">
+                <strong>Recheck after every change</strong>
+                <p>Review every outstanding issue before updating the overall decision. Stay within your authority.</p>
+              </div>
+            </div>
+          </div>
+
+          <!-- Right: Personal Review Focus Box -->
+          <div class="personal-review-card">
+            <div class="review-focus-tag">YOUR PERSONAL REVIEW FOCUS</div>
+            <h3 class="review-focus-title">One issue resolved.<br>What is still open?</h3>
+            <p class="review-focus-p">
+              In Scenario 2, the site issue was corrected, but the PPE record was still unverified. That remaining gap prevented a Proceed decision.
+            </p>
+
+            <div class="expected-change-subbox">
+              <div class="expected-change-label">SCENARIO 2 · EXPECTED DECISION CHANGE</div>
+              <div class="decision-arrow-row">
+                <span class="badge-no-go">Do Not Start & Escalate</span>
+                <span style="color: #64748b; font-weight: 800;">→</span>
+                <span class="badge-hold-change">Hold for Verification</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Bottom Action Bar -->
+      <div class="results-bottom-action-bar">
+        <div class="action-bar-motto">
+          Verify the evidence. Apply the rule.<br>
+          Decide within your authority.
+        </div>
+        <div style="display: flex; gap: 0.75rem; align-items: center;">
+          <button class="btn-retake-header" id="btn-retake-bottom">
+            <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M1 4v6h6M23 20v-6h-6"/>
+              <path d="M20.49 9A9 9 0 0 0 5.64 5.64L1 10m22 4l-4.64 4.36A9 9 0 0 1 3.51 15"/>
+            </svg>
+            <span>Retake practice</span>
           </button>
-          <button class="btn-primary" id="btn-retake-training" style="background: #ef4444; color: #ffffff;">
-            🔄 Retake Training Assessment
+          <button class="btn-open-checklist" id="btn-results-open-checklist">
+            <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4"/>
+            </svg>
+            <span>Open quick checklist →</span>
           </button>
         </div>
       </div>
+
+      <!-- Footer Disclaimer -->
+      <div class="results-legal-footer">
+        <p>Training results do not authorize real work. Follow the current VFTC SOP and assigned authority.</p>
+        <p>Prototype · Illustrative learner results and scenario rules.</p>
+      </div>
     `;
+
+    // Accordion Toggle
+    document.getElementById("btn-toggle-history")?.addEventListener("click", () => {
+      state.historyAccordionOpen = !state.historyAccordionOpen;
+      document.getElementById("history-accordion")?.classList.toggle("open", state.historyAccordionOpen);
+    });
+
+    // Open Quick Checklist button
+    document.getElementById("btn-results-open-checklist")?.addEventListener("click", () => {
+      handbookDrawer?.classList.add("open");
+    });
+
+    // Retake Practice Action (Attached to all Retake buttons across header, history footer, and bottom action bar)
+    function handleRetakePractice() {
+      state.quizAnswers = {};
+      state.scenarioAnswers = {};
+      state.currentQuizIndex = 0;
+      state.currentScenarioIndex = 0;
+      state.currentRoundIndex = 0;
+      state.testCompleted = false;
+      state.historyAccordionOpen = false;
+      state.scenarioAttempts = { "scenario-1": 1, "scenario-2": 1 };
+
+      if (navStepResults) {
+        navStepResults.style.display = "none";
+        navStepResults.classList.remove("active");
+      }
+
+      switchView("quiz");
+    }
+
+    ["btn-retake-header", "btn-retake-history", "btn-retake-bottom"].forEach((btnId) => {
+      document.getElementById(btnId)?.addEventListener("click", handleRetakePractice);
+    });
   }
 
-  // Initialize Landing View on Load
+  // Initialize
+  initInteractiveChecklist();
   switchView("hero");
 });

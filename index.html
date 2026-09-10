@@ -3,49 +3,58 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Operational Readiness Training for Fumigation Supervisors</title>
-  <meta name="description" content="Supervisory pre-start verification, site assessment, equipment checks, PPE and respirator readiness, and operational escalation protocols for fumigation supervisors.">
+  <title>Ready to Start? — Operational readiness · Supervisor practice</title>
+  <meta name="description" content="Operational readiness and pre-start supervisory verification for fumigation operations.">
   <link rel="stylesheet" href="css/styles.css">
-  <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>☣️</text></svg>">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🛡️</text></svg>">
 </head>
 <body>
 
   <!-- =========================================================================
-       Site Header & Global Navigation Bar
+       Site Header & Stepper Navigation (Matching Provided Design)
        ========================================================================= -->
   <header class="site-header">
-    <div class="header-container">
-      <div class="brand-wrapper">
-        <div class="brand-hazard-badge">☣ SAFETY-READY</div>
-        <div class="brand-text-col">
-          <span class="brand-title">FUMIGATION OPERATIONAL READINESS</span>
-          <span class="brand-subtitle">Supervisory Pre-Start Verification System</span>
+    <div class="header-top-bar">
+      <div class="header-container">
+        <div class="brand-wrapper" id="brand-home-trigger">
+          <div class="brand-shield-icon">
+            <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" fill="#15803d" stroke="#15803d"/>
+              <path d="M9 12l2 2 4-4" stroke="#ffffff" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </div>
+          <div class="brand-text-col">
+            <span class="brand-title">Ready to Start?</span>
+            <span class="brand-subtitle">Operational readiness · Supervisor practice</span>
+          </div>
+        </div>
+
+        <div class="header-actions">
+          <button class="btn-handbook-quick" id="btn-open-drawer" title="Open Field Reference">
+            📖 Quick guide
+          </button>
         </div>
       </div>
+    </div>
 
-      <!-- Navigation Tabs -->
-      <nav class="header-nav" aria-label="Main Navigation">
-        <button class="nav-tab-btn active" data-view="hero" id="nav-hero">
-          <span>Overview</span>
+    <!-- Stepper Navigation Bar -->
+    <div class="stepper-nav-bar">
+      <div class="stepper-container">
+        <button class="step-nav-btn" data-view="handbook" id="nav-step-guide">
+          <span class="step-check">✓</span>
+          <span>Quick guide</span>
         </button>
-        <button class="nav-tab-btn" data-view="handbook" id="nav-handbook">
-          <span>Handbook</span>
+        <button class="step-nav-btn" data-view="quiz" id="nav-step-domain">
+          <span class="step-check">✓</span>
+          <span>Domain practice</span>
         </button>
-        <button class="nav-tab-btn" data-view="quiz" id="nav-quiz">
-          <span>Decision Quiz</span>
+        <button class="step-nav-btn" data-view="scenarios" id="nav-step-scenarios">
+          <span class="step-check">✓</span>
+          <span>Scenarios</span>
         </button>
-        <button class="nav-tab-btn" data-view="scenarios" id="nav-scenarios">
-          <span>Interactive Scenarios</span>
-        </button>
-        <button class="nav-tab-btn" data-view="dashboard" id="nav-dashboard">
-          <span>Readiness Dashboard</span>
-        </button>
-      </nav>
-
-      <!-- Quick Actions -->
-      <div class="header-actions">
-        <button class="btn-handbook-quick" id="btn-open-drawer" title="Open Quick Handbook Drawer">
-          📖 <span>Quick Handbook</span>
+        <button class="step-nav-btn step-results-btn" data-view="dashboard" id="nav-step-results" style="display: none;">
+          <span class="step-num-badge">4</span>
+          <span>Results</span>
         </button>
       </div>
     </div>
@@ -60,22 +69,22 @@
     <section class="page-view active" id="view-hero">
       <div class="hero-stage">
         <div class="step-card">
-          <div class="hero-tag">OPERATIONAL READINESS MODULE • FUMIGATION SAFETY STANDARD</div>
+          <div class="hero-tag">OPERATIONAL READINESS MODULE • SUPERVISOR PRACTICE</div>
           <h1 class="hero-main-title">READY TO START?</h1>
           <div class="hero-main-subtitle">Operational Readiness Training for Fumigation Supervisors</div>
           
-          <p style="color: var(--color-text-secondary); font-size: 1.05rem; line-height: 1.6; max-width: 780px;">
-            Welcome to the operational verification gateway. Before hazardous gas introduction begins, supervisors must cross-examine physical site conditions, equipment certificates, and respirator readiness.
+          <p style="color: var(--color-text-secondary); font-size: 1.05rem; line-height: 1.6; max-width: 760px;">
+            Welcome to the operational readiness portal. As a fumigation supervisor, you must cross-check preparation evidence, assess site boundaries, verify equipment calibration, and confirm respirator readiness before any gas application begins.
           </p>
 
           <div class="hero-action-box">
             <div class="hero-cue">
-              <span style="font-size: 1.4rem;">👉</span>
-              <span>Proceed to the supervisory briefing and role responsibilities.</span>
+              <span style="font-size: 1.3rem;">👉</span>
+              <span>Review your role and begin the operational practice module.</span>
             </div>
             <button class="btn-primary-start" id="btn-hero-next">
               <span>Click to Next</span>
-              <span style="font-size: 1.2rem;">→</span>
+              <span style="font-size: 1.15rem;">→</span>
             </button>
           </div>
         </div>
@@ -87,16 +96,16 @@
       <div class="hero-stage role-overview-stage">
         <!-- Role Definition -->
         <div class="briefing-box">
-          <div class="briefing-label">Assigned Authority & Mandate</div>
-          <h2 class="briefing-title">Role: Fumigation Operational Supervisor</h2>
+          <div class="briefing-label">Assigned Supervisory Authority</div>
+          <h2 class="briefing-title">Role</h2>
           <div class="briefing-content">
             As the supervisor, your responsibility is to review the team’s preparation evidence, identify unresolved requirements, and make a readiness decision within your assigned authority.
           </div>
         </div>
 
         <!-- Operational Scope & Description -->
-        <div class="briefing-box" style="border-left-color: #f59e0b;">
-          <div class="briefing-label" style="color: #f59e0b;">Verification Scope</div>
+        <div class="briefing-box" style="border-left-color: var(--color-safety-yellow-bright);">
+          <div class="briefing-label" style="color: var(--color-safety-yellow);">Preparation Scope</div>
           <h2 class="briefing-title">Description</h2>
           <div class="briefing-content">
             After workers complete preparation and initial checks, supervisors need to cross-check the evidence and verify readiness before fumigation begins. Learn to assess site conditions, equipment, and PPE/respirator readiness—and decide what needs to happen next—through a practical handbook and interactive scenarios.
@@ -111,7 +120,7 @@
               <div class="portal-icon">📘</div>
               <h3 class="portal-title">Preparation Readiness Handbook</h3>
               <p class="portal-desc">
-                Review the 4-step readiness framework (Check, Identify, Classify, Decide), inspection criteria for the 3 key areas, and quick reference checklists.
+                Explore the complete 4-step readiness framework (Check, Identify, Classify, Decide) and review the reference checklists for all three preparation areas.
               </p>
             </div>
             <div class="portal-btn">
@@ -124,9 +133,9 @@
           <div class="choice-portal-card testing-card" id="btn-portal-testing">
             <div>
               <div class="portal-icon">🎯</div>
-              <h3 class="portal-title">Interactive Testing</h3>
+              <h3 class="portal-title">Domain Practice & Scenarios</h3>
               <p class="portal-desc">
-                Evaluate real field evidence dossiers across 6 Decision Quizzes and 2 multi-round Interactive Scenarios to earn supervisory pre-start certification.
+                Evaluate real field evidence across 3 domains (Site Conditions, Equipment, PPE) and resolve 2 integrated multi-round scenarios.
               </p>
             </div>
             <div class="portal-btn">
@@ -138,12 +147,12 @@
       </div>
     </section>
 
-    <!-- View 3: Operational Handbook -->
+    <!-- View 3: Operational Handbook (Quick Guide) -->
     <section class="page-view" id="view-handbook">
       <div class="handbook-layout">
         <!-- Sticky Sidebar Navigation -->
         <aside class="handbook-sidebar">
-          <div class="sidebar-title">Handbook Table of Contents</div>
+          <div class="sidebar-title">Quick Guide Contents</div>
           <ul class="handbook-nav-list" id="handbook-nav-list">
             <!-- Rendered dynamically -->
           </ul>
@@ -156,44 +165,34 @@
       </div>
     </section>
 
-    <!-- View 4: Part A - Decision Quiz -->
+    <!-- View 4: Part A - Domain Practice (3 Domains x 2 Cases) -->
     <section class="page-view" id="view-quiz">
-      <div class="testing-header-banner">
+      <div class="testing-header-banner" style="display: flex; align-items: flex-start; justify-content: space-between; margin-bottom: 1.5rem;">
         <div>
-          <span class="test-badge">PART A: READINESS DECISION QUIZ</span>
-          <h2 class="test-title">Field Evidence Verification Cases</h2>
-          <p class="test-desc">
-            You are reviewing a team’s pre-start readiness. Check the site, equipment, and PPE evidence, then decide what should happen next.
+          <div class="results-super-tag">PART A • PRACTICE MODULE</div>
+          <h2 class="results-main-title" style="font-size: 1.85rem;">Domain Practice</h2>
+          <p class="results-subtitle">
+            Review the team’s pre-start evidence across 3 readiness domains. Decide what should happen next.
           </p>
         </div>
       </div>
 
-      <!-- Progress Ribbon -->
-      <div class="progress-ribbon" id="quiz-progress-ribbon">
-        <!-- Rendered dynamically -->
-      </div>
-
-      <!-- Quiz Mount -->
+      <!-- Quiz Case Mount -->
       <div id="quiz-card-container">
         <!-- Rendered dynamically -->
       </div>
     </section>
 
-    <!-- View 5: Part B - Interactive Scenarios -->
+    <!-- View 5: Part B - Integrated Scenarios (01 · Evidence mismatches, 02 · Changing conditions) -->
     <section class="page-view" id="view-scenarios">
-      <div class="testing-header-banner">
+      <div class="testing-header-banner" style="display: flex; align-items: flex-start; justify-content: space-between; margin-bottom: 1.5rem;">
         <div>
-          <span class="test-badge">PART B: MULTI-ROUND INTERACTIVE SCENARIOS</span>
-          <h2 class="test-title">Supervisory Pre-Start Simulation</h2>
-          <p class="test-desc">
-            Synthesize conditions across all three readiness areas simultaneously. Handle real-time updates and make decisive pre-start determinations.
+          <div class="results-super-tag">PART B • PRACTICAL SIMULATION</div>
+          <h2 class="results-main-title" style="font-size: 1.85rem;">Integrated Scenarios</h2>
+          <p class="results-subtitle">
+            Synthesize site, equipment, and PPE evidence in live operational conditions.
           </p>
         </div>
-      </div>
-
-      <!-- Progress Ribbon -->
-      <div class="progress-ribbon" id="scenario-progress-ribbon">
-        <!-- Rendered dynamically -->
       </div>
 
       <!-- Scenario Mount -->
@@ -202,24 +201,24 @@
       </div>
     </section>
 
-    <!-- View 6: Dual Dashboard -->
+    <!-- View 6: Results Screen (Pixel-Matched to User's Screenshot) -->
     <section class="page-view" id="view-dashboard">
-      <div class="dashboard-stage" id="dashboard-content-mount">
-        <!-- Rendered dynamically with Criteria Met & Review Required options -->
+      <div class="results-page-container" id="dashboard-content-mount">
+        <!-- Rendered dynamically matching user screenshot -->
       </div>
     </section>
 
   </main>
 
   <!-- =========================================================================
-       Quick Handbook Slide-Over Drawer (Accessible Anytime During Testing)
+       Quick Handbook Slide-Over Drawer
        ========================================================================= -->
   <div class="drawer-backdrop" id="handbook-drawer">
     <div class="drawer-panel" role="dialog" aria-modal="true" aria-labelledby="drawer-title">
       <div class="drawer-header">
         <div class="drawer-title-col">
-          <span id="drawer-title">FIELD REFERENCE</span>
-          <h4>Operational Readiness Handbook</h4>
+          <span id="drawer-title">SUPERVISOR QUICK CHECKLIST</span>
+          <h4>Preparation Readiness Framework</h4>
         </div>
         <button class="drawer-close-btn" id="btn-close-drawer" aria-label="Close Drawer">&times;</button>
       </div>
@@ -227,15 +226,15 @@
         
         <div class="drawer-quick-sec">
           <h5><span>1.</span> Framework Pipeline</h5>
-          <p style="font-size: 0.85rem; color: #cbd5e1; margin-bottom: 0.5rem;">
+          <p style="font-size: 0.85rem; color: #475569; margin-bottom: 0.5rem;">
             <strong>CHECK</strong> (Site, Equipment, PPE) → <strong>IDENTIFY</strong> (Gaps & Mismatches) → <strong>CLASSIFY</strong> (Ready / Not Verified / Not Ready) → <strong>DECIDE</strong> (Proceed / Hold / Escalate)
           </p>
         </div>
 
         <div class="drawer-quick-sec">
           <h5><span>2.</span> The Three Decisions</h5>
-          <ul style="padding-left: 1.2rem; font-size: 0.85rem; color: #cbd5e1; display: flex; flex-direction: column; gap: 0.45rem;">
-            <li><strong>Proceed:</strong> All applicable readiness requirements are verified, outstanding issues closed, start authorisation complete.</li>
+          <ul style="padding-left: 1.2rem; font-size: 0.85rem; color: #475569; display: flex; flex-direction: column; gap: 0.45rem;">
+            <li><strong>Proceed:</strong> All applicable readiness requirements are verified, outstanding issues closed, start authorization complete.</li>
             <li><strong>Hold for Verification:</strong> Requirement cannot yet be confirmed; keep operation on hold while obtaining reliable evidence.</li>
             <li><strong>Do Not Start & Escalate:</strong> Critical requirement failed, procedure mandates escalation, or issue exceeds authority.</li>
           </ul>
@@ -243,20 +242,59 @@
 
         <div class="drawer-quick-sec">
           <h5><span>3.</span> Core Rules of Thumb</h5>
-          <ul style="padding-left: 1.2rem; font-size: 0.85rem; color: #cbd5e1; display: flex; flex-direction: column; gap: 0.45rem;">
+          <ul style="padding-left: 1.2rem; font-size: 0.85rem; color: #475569; display: flex; flex-direction: column; gap: 0.45rem;">
             <li>Both <strong>Hold for Verification</strong> and <strong>Do Not Start & Escalate</strong> mean the operation MUST NOT begin.</li>
             <li>A verbal promise ("we will fix it later" or "I used it yesterday") is NOT verified evidence.</li>
-            <li>A completed check in one area (e.g., Equipment) does not authorise the entire job if other areas remain incomplete.</li>
+            <li>A completed check in one domain does not clear the whole job if others remain incomplete.</li>
           </ul>
         </div>
 
         <div class="drawer-quick-sec">
-          <h5><span>4.</span> Common Quiz Options for Question 1</h5>
-          <p style="font-size: 0.85rem; color: #cbd5e1;">
-            <strong>A. Next Check:</strong> Requirement verified; proceed with remaining checks.<br>
-            <strong>B. Hold for Verification:</strong> Required evidence is missing, mismatched, or outdated.<br>
-            <strong>C. Do Not Start & Escalate:</strong> Confirmed critical no-go condition requiring escalation under procedure.
-          </p>
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.75rem;">
+            <h5 style="margin-bottom: 0;"><span>4.</span> Interactive Readiness Checklist</h5>
+            <div style="display: flex; gap: 0.4rem; align-items: center;">
+              <span class="drawer-counter-tag"><strong id="drawer-checked-count">0</strong>/12</span>
+              <button type="button" class="btn-check-mini" id="btn-drawer-check-all" title="Select all items">All</button>
+              <button type="button" class="btn-check-mini" id="btn-drawer-check-clear" title="Clear all items">Clear</button>
+            </div>
+          </div>
+          <div class="drawer-checklist-container">
+            <!-- Site -->
+            <div class="drawer-domain-group">
+              <div class="drawer-domain-header">
+                <h6>Site / Position</h6>
+                <span class="drawer-domain-badge" id="drawer-count-site">0/4</span>
+              </div>
+              <label class="check-item"><input type="checkbox" class="drawer-cb" data-domain="site" data-idx="0"> <span>Work area matches approved job info.</span></label>
+              <label class="check-item"><input type="checkbox" class="drawer-cb" data-domain="site" data-idx="1"> <span>Access & site preparation confirmed.</span></label>
+              <label class="check-item"><input type="checkbox" class="drawer-cb" data-domain="site" data-idx="2"> <span>Boundaries, signs, access controls verified.</span></label>
+              <label class="check-item"><input type="checkbox" class="drawer-cb" data-domain="site" data-idx="3"> <span>Changed conditions & obstructions addressed.</span></label>
+            </div>
+
+            <!-- Equipment -->
+            <div class="drawer-domain-group">
+              <div class="drawer-domain-header">
+                <h6>Equipment</h6>
+                <span class="drawer-domain-badge" id="drawer-count-equipment">0/4</span>
+              </div>
+              <label class="check-item"><input type="checkbox" class="drawer-cb" data-domain="equipment" data-idx="0"> <span>Required items available & match list.</span></label>
+              <label class="check-item"><input type="checkbox" class="drawer-cb" data-domain="equipment" data-idx="1"> <span>Required condition checks complete.</span></label>
+              <label class="check-item"><input type="checkbox" class="drawer-cb" data-domain="equipment" data-idx="2"> <span>Inspection records match equipment serials.</span></label>
+              <label class="check-item"><input type="checkbox" class="drawer-cb" data-domain="equipment" data-idx="3"> <span>Monitoring readiness & calibration confirmed.</span></label>
+            </div>
+
+            <!-- PPE -->
+            <div class="drawer-domain-group">
+              <div class="drawer-domain-header">
+                <h6>PPE / Respirator</h6>
+                <span class="drawer-domain-badge" id="drawer-count-ppe">0/4</span>
+              </div>
+              <label class="check-item"><input type="checkbox" class="drawer-cb" data-domain="ppe" data-idx="0"> <span>Protection matches job requirements.</span></label>
+              <label class="check-item"><input type="checkbox" class="drawer-cb" data-domain="ppe" data-idx="1"> <span>Required items available for each wearer.</span></label>
+              <label class="check-item"><input type="checkbox" class="drawer-cb" data-domain="ppe" data-idx="2"> <span>Required condition checks complete.</span></label>
+              <label class="check-item"><input type="checkbox" class="drawer-cb" data-domain="ppe" data-idx="3"> <span>Respirator & wearer-readiness confirmed.</span></label>
+            </div>
+          </div>
         </div>
 
       </div>

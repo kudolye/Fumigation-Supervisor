@@ -13,7 +13,15 @@ const HANDBOOK_DATA = {
       badge: "Core Standard",
       content: `
         <p class="lead-text">A practical guide to checking site/position, equipment, and PPE/respirator readiness before fumigation begins.</p>
-        <p>Read the handbook before starting the scenario, or return to a section whenever you need operational guidance during supervisory verification.</p>
+        
+        <div class="handbook-media-banner">
+          <img src="assets/images/handbook_overview.jpg" alt="Supervisor performing pre-start operational verification at container fumigation site" class="handbook-media-img">
+          <div class="handbook-media-caption">
+            <strong>Standard Field Protocol:</strong> A certified supervisor confirms physical site readiness, warning signage, and containment boundaries before any gas application.
+          </div>
+        </div>
+
+        <p>Read the handbook before starting the scenarios, or return to a section whenever you need operational guidance during supervisory verification.</p>
         <div class="callout callout-info">
           <div class="callout-icon">📋</div>
           <div>
@@ -31,11 +39,11 @@ const HANDBOOK_DATA = {
       content: `
         <div class="two-col-grid">
           <div class="card-mini">
-            <h4><span class="step-num">A</span> Before the Scenario</h4>
+            <h4><span class="step-num">A.</span> Before the Scenario</h4>
             <p>Read the readiness framework and explore the three preparation areas. Learn what to check, which evidence to review, and how to respond when a requirement is unclear or unmet.</p>
           </div>
           <div class="card-mini">
-            <h4><span class="step-num">B</span> During the Scenario</h4>
+            <h4><span class="step-num">B.</span> During the Scenario</h4>
             <p>Select <strong>View Handbook</strong> at any time to revisit the relevant section. Compare the field information provided with the stated criteria before committing to your decision.</p>
           </div>
         </div>
@@ -50,13 +58,10 @@ const HANDBOOK_DATA = {
       content: `
         <p>Pre-start verification follows a rigorous four-stage supervisory pipeline:</p>
         <div class="process-pipeline">
-          <div class="pipeline-step"><span class="pipe-num">1</span><strong>CHECK</strong>Physical conditions & documentation</div>
-          <div class="pipeline-arrow">→</div>
-          <div class="pipeline-step"><span class="pipe-num">2</span><strong>IDENTIFY</strong>Gaps, mismatches & discrepancies</div>
-          <div class="pipeline-arrow">→</div>
-          <div class="pipeline-step"><span class="pipe-num">3</span><strong>CLASSIFY</strong>Status per requirement</div>
-          <div class="pipeline-arrow">→</div>
-          <div class="pipeline-step"><span class="pipe-num">4</span><strong>DECIDE</strong>Overall pre-start disposition</div>
+          <div class="pipeline-step"><span class="pipe-num">1. </span><strong>CHECK:</strong> Physical conditions & documentation</div>
+          <div class="pipeline-step"><span class="pipe-num">2. </span><strong>IDENTIFY:</strong> Gaps, mismatches & discrepancies</div>
+          <div class="pipeline-step"><span class="pipe-num">3. </span><strong>CLASSIFY:</strong> Status per requirement</div>
+          <div class="pipeline-step"><span class="pipe-num">4. </span><strong>DECIDE:</strong> Overall pre-start disposition</div>
         </div>
 
         <h4 class="section-subheading">Review all three preparation areas:</h4>
@@ -70,7 +75,7 @@ const HANDBOOK_DATA = {
             </thead>
             <tbody>
               <tr>
-                <td><span class="tag-area site">Site / Position</span></td>
+                <td><span class="tag-area site">Site / Condition</span></td>
                 <td>Does the actual work area meet the approved preparation requirements?</td>
               </tr>
               <tr>
@@ -96,7 +101,7 @@ const HANDBOOK_DATA = {
             </thead>
             <tbody>
               <tr>
-                <td><span class="status-badge ready">Ready</span></td>
+                <td><span class="status-badge ready">Next Check</span></td>
                 <td>The requirement is met and the necessary evidence has been confirmed.</td>
               </tr>
               <tr>
@@ -118,7 +123,7 @@ const HANDBOOK_DATA = {
               <span class="decision-icon">🟢</span>
               <h5>Proceed</h5>
             </div>
-            <p>All applicable readiness requirements are verified, outstanding issues are closed, and the required start authorisations are complete.</p>
+            <p>All applicable readiness requirements are verified, outstanding issues are closed, and the required start authorizations are complete.</p>
           </div>
           <div class="decision-card hold-card">
             <div class="decision-header">
@@ -152,6 +157,13 @@ const HANDBOOK_DATA = {
       subtitle: "IS THE WORK AREA READY?",
       badge: "Area 1",
       content: `
+        <div class="handbook-media-banner">
+          <img src="assets/images/site_readiness.jpg" alt="Fumigation exclusion perimeter barricades with danger signs and warning cones" class="handbook-media-img">
+          <div class="handbook-media-caption">
+            <strong>Perimeter Verification:</strong> Confirmed exclusion barriers and unambiguous warning signage ('DANGER FUMIGATION ZONE - KEEP OUT') must be established prior to authorization.
+          </div>
+        </div>
+
         <div class="quad-grid">
           <div class="quad-box">
             <div class="quad-title">🔍 What to Verify</div>
@@ -189,6 +201,13 @@ const HANDBOOK_DATA = {
       subtitle: "IS THE EQUIPMENT READY FOR THIS JOB?",
       badge: "Area 2",
       content: `
+        <div class="handbook-media-banner">
+          <img src="assets/images/equipment_readiness.jpg" alt="Gas clearance detector monitor with valid calibration certification tag and inspection log" class="handbook-media-img">
+          <div class="handbook-media-caption">
+            <strong>Calibration Verification:</strong> Verify that monitoring equipment serial numbers match current calibration certificates and valid inspection dates.
+          </div>
+        </div>
+
         <div class="quad-grid">
           <div class="quad-box">
             <div class="quad-title">🔍 What to Verify</div>
@@ -214,7 +233,7 @@ const HANDBOOK_DATA = {
           </div>
           <div class="quad-box quad-action">
             <div class="quad-title">🛡️ What to Do</div>
-            <p>Keep unresolved equipment requirements open. Obtain missing records, arrange authorised repairs or replacements, and physically verify before updating status.</p>
+            <p>Keep unresolved equipment requirements open. Obtain missing records, arrange authorized repairs or replacements, and physically verify before updating status.</p>
           </div>
         </div>
       `
@@ -226,6 +245,13 @@ const HANDBOOK_DATA = {
       subtitle: "IS THE REQUIRED PROTECTION READY?",
       badge: "Area 3",
       content: `
+        <div class="handbook-media-banner">
+          <img src="assets/images/ppe_readiness.jpg" alt="Full-face respirator, gas canister, SCBA cylinder, chemical suit, and wearer fit-test card" class="handbook-media-img">
+          <div class="handbook-media-caption">
+            <strong>Life-Safety Compliance:</strong> Ensure tight-fitting respirators have verified quantitative fit-test certificates matching each specific wearer and facepiece model.
+          </div>
+        </div>
+
         <div class="quad-grid">
           <div class="quad-box">
             <div class="quad-title">🔍 What to Verify</div>
@@ -264,29 +290,49 @@ const HANDBOOK_DATA = {
       content: `
         <p>Use this checklist alongside approved job-specific documentation. Mark each item <strong>Ready</strong>, <strong>Not Verified</strong>, or <strong>Not Ready</strong>, and log the supporting evidence.</p>
         
+        <div class="checklist-toolbar">
+          <div class="checklist-summary-stat">
+            <span class="checklist-progress-badge"><strong id="handbook-checklist-count">0</strong> / 12 Verified</span>
+            <span class="checklist-stat-desc">Click any requirement to toggle verification status</span>
+          </div>
+          <div class="checklist-toolbar-actions">
+            <button type="button" class="btn-check-action" id="btn-check-all">Select All</button>
+            <button type="button" class="btn-check-action" id="btn-check-clear">Clear All</button>
+          </div>
+        </div>
+
         <div class="checklist-interactive">
-          <div class="checklist-group">
-            <h5>Site / Position</h5>
-            <label class="check-item"><input type="checkbox" checked disabled> <span>Work area matches the approved job information.</span></label>
-            <label class="check-item"><input type="checkbox" checked disabled> <span>Required access and site preparation are confirmed.</span></label>
-            <label class="check-item"><input type="checkbox" checked disabled> <span>Specified boundaries, signs, and access controls are verified.</span></label>
-            <label class="check-item"><input type="checkbox" checked disabled> <span>Changed conditions and identified obstructions are addressed.</span></label>
+          <div class="checklist-group" data-domain="site">
+            <div class="checklist-group-header">
+              <h5>Site / Position</h5>
+              <span class="group-count" id="count-site">0/4</span>
+            </div>
+            <label class="check-item"><input type="checkbox" class="checklist-cb" data-domain="site" data-idx="0"> <span>Work area matches the approved job information.</span></label>
+            <label class="check-item"><input type="checkbox" class="checklist-cb" data-domain="site" data-idx="1"> <span>Required access and site preparation are confirmed.</span></label>
+            <label class="check-item"><input type="checkbox" class="checklist-cb" data-domain="site" data-idx="2"> <span>Specified boundaries, signs, and access controls are verified.</span></label>
+            <label class="check-item"><input type="checkbox" class="checklist-cb" data-domain="site" data-idx="3"> <span>Changed conditions and identified obstructions are addressed.</span></label>
           </div>
 
-          <div class="checklist-group">
-            <h5>Equipment</h5>
-            <label class="check-item"><input type="checkbox" checked disabled> <span>Required items are available and match the approved list.</span></label>
-            <label class="check-item"><input type="checkbox" checked disabled> <span>Required condition checks are complete.</span></label>
-            <label class="check-item"><input type="checkbox" checked disabled> <span>Applicable inspection records match the actual equipment serials.</span></label>
-            <label class="check-item"><input type="checkbox" checked disabled> <span>Required monitoring-equipment readiness & calibration is confirmed.</span></label>
+          <div class="checklist-group" data-domain="equipment">
+            <div class="checklist-group-header">
+              <h5>Equipment</h5>
+              <span class="group-count" id="count-equipment">0/4</span>
+            </div>
+            <label class="check-item"><input type="checkbox" class="checklist-cb" data-domain="equipment" data-idx="0"> <span>Required items are available and match the approved list.</span></label>
+            <label class="check-item"><input type="checkbox" class="checklist-cb" data-domain="equipment" data-idx="1"> <span>Required condition checks are complete.</span></label>
+            <label class="check-item"><input type="checkbox" class="checklist-cb" data-domain="equipment" data-idx="2"> <span>Applicable inspection records match the actual equipment serials.</span></label>
+            <label class="check-item"><input type="checkbox" class="checklist-cb" data-domain="equipment" data-idx="3"> <span>Required monitoring-equipment readiness & calibration is confirmed.</span></label>
           </div>
 
-          <div class="checklist-group">
-            <h5>PPE / Respirator</h5>
-            <label class="check-item"><input type="checkbox" checked disabled> <span>Protection matches the approved job requirements.</span></label>
-            <label class="check-item"><input type="checkbox" checked disabled> <span>Required items are available for each intended user.</span></label>
-            <label class="check-item"><input type="checkbox" checked disabled> <span>Required condition checks are complete.</span></label>
-            <label class="check-item"><input type="checkbox" checked disabled> <span>Applicable respirator and wearer-readiness evidence is confirmed.</span></label>
+          <div class="checklist-group" data-domain="ppe">
+            <div class="checklist-group-header">
+              <h5>PPE / Respirator</h5>
+              <span class="group-count" id="count-ppe">0/4</span>
+            </div>
+            <label class="check-item"><input type="checkbox" class="checklist-cb" data-domain="ppe" data-idx="0"> <span>Protection matches the approved job requirements.</span></label>
+            <label class="check-item"><input type="checkbox" class="checklist-cb" data-domain="ppe" data-idx="1"> <span>Required items are available for each intended user.</span></label>
+            <label class="check-item"><input type="checkbox" class="checklist-cb" data-domain="ppe" data-idx="2"> <span>Required condition checks are complete.</span></label>
+            <label class="check-item"><input type="checkbox" class="checklist-cb" data-domain="ppe" data-idx="3"> <span>Applicable respirator and wearer-readiness evidence is confirmed.</span></label>
           </div>
         </div>
 
@@ -302,9 +348,9 @@ const HANDBOOK_DATA = {
 };
 
 const QUIZ_COMMON_DECISIONS = [
-  { id: "A", text: "Next Check", desc: "The requirement in this check has been verified; proceed with the remaining checks." },
-  { id: "B", text: "Hold for Verification", desc: "Required evidence is missing, mismatched, or does not reflect current conditions." },
-  { id: "C", text: "Do Not Start & Escalate", desc: "There is a confirmed critical no-go condition requiring escalation under procedure." }
+  { id: "A", text: "Next Check", desc: "The requirement is met and the necessary evidence has been confirmed." },
+  { id: "B", text: "Not Verified", desc: "Evidence is missing, unclear, inconsistent, or no longer applicable." },
+  { id: "C", text: "Not Ready", desc: "The available evidence confirms that the requirement is not met." }
 ];
 
 const QUIZ_QUESTIONS = [
@@ -343,7 +389,7 @@ const QUIZ_QUESTIONS = [
       correct: "B"
     },
     explanation: {
-      decision: "B — Hold for Verification",
+      decision: "B — Not Verified",
       action: "B — Obtain and review a current site check covering the layout change.",
       details: "The 08:00 checklist does not reflect the conditions created by the 09:00 layout alteration. The fact that the area designation remains 'Area A' or that a signature exists on outdated paperwork does not bridge this evidentiary gap. Additionally, the evidence does not establish a confirmed critical no-go failure, meaning escalation is not warranted under the exercise rules.",
       competencyNote: "Evaluates whether the supervisor confirms that evidence remains applicable to current physical conditions, rather than blindly accepting a signed document."
@@ -383,7 +429,7 @@ const QUIZ_QUESTIONS = [
       correct: "C"
     },
     explanation: {
-      decision: "C — Do Not Start & Escalate",
+      decision: "C — Not Ready",
       action: "C — Notify the designated person, arrange correction under procedure, and verify completion before closing the issue.",
       details: "The barrier is confirmed to be missing, and the operating procedure explicitly defines this as a critical no-go condition demanding escalation. This is a confirmed physical safety violation, not merely missing paperwork. A verbal assurance of future installation does not constitute verified readiness.",
       competencyNote: "Tests the supervisor's ability to distinguish 'unverified paperwork' from 'confirmed physical failure,' and enforces that planned corrective actions are never recorded as closed until physically re-verified."
@@ -423,7 +469,7 @@ const QUIZ_QUESTIONS = [
       correct: "A"
     },
     explanation: {
-      decision: "B — Hold for Verification",
+      decision: "B — Not Verified",
       action: "A — Obtain the applicable record for M-02 and verify it against the actual item and approved requirements.",
       details: "The record for M-03 cannot establish the operational readiness or sensor calibration of M-02. Being the same model does not make calibration records interchangeable. However, this serial mismatch does not prove M-02 is broken or condemned; its readiness is simply unverified at this moment.",
       competencyNote: "Assesses cross-checking physical serial identities against compliance records and selecting the correct remedy to resolve discrepancies."
@@ -457,7 +503,7 @@ const QUIZ_QUESTIONS = [
     q2: {
       prompt: "What should you do next?",
       options: [
-        { id: "A", text: "Record the equipment result and authorise the operation to begin." },
+        { id: "A", text: "Record the equipment result and authorize the operation to begin." },
         { id: "B", text: "Keep equipment status unverified solely because another readiness area is incomplete." },
         { id: "C", text: "Record equipment readiness as verified and continue the remaining readiness checks." }
       ],
@@ -545,7 +591,7 @@ const QUIZ_QUESTIONS = [
       correct: "B"
     },
     explanation: {
-      decision: "C — Do Not Start & Escalate",
+      decision: "C — Not Ready",
       action: "B — Notify the designated person, arrange the required item, and verify the applicable readiness requirements once it is available.",
       details: "A missing required life-safety PPE item is a confirmed failure that triggers mandatory escalation under safety procedures. An ETA on a delivery truck is not evidence of operational readiness. When the package arrives, the supervisor must still unbox, inspect, and verify the item prior to closing the gap.",
       competencyNote: "Measures resilience against schedule pressure and reinforces that physical receipt must be accompanied by verified inspection before closing a life-safety issue."
@@ -555,8 +601,9 @@ const QUIZ_QUESTIONS = [
 
 const SCENARIO_CLUSTERS = [
   {
-    id: "cluster-1",
-    title: "Scenario Cluster 1: Pre-start Review (Area B)",
+    id: "scenario-1",
+    code: "01",
+    title: "01 · Evidence mismatches",
     briefing: "You are supervising the pre-start readiness review for a high-priority fumigation job in Area B. The operations team expects to initiate gas introduction shortly. Review all three readiness areas and decide what must happen next.",
     rounds: [
       {
@@ -566,26 +613,19 @@ const SCENARIO_CLUSTERS = [
           {
             name: "Site Conditions",
             tagClass: "site",
-            status: "Verified",
-            statusClass: "ready",
             details: "The current site check covers the approved Area B layout and confirms all required site controls and exclusion barriers. No later changes are reported."
           },
           {
             name: "Equipment",
             tagClass: "equip",
-            status: "Mismatch",
-            statusClass: "hold",
             details: "The actual gas monitor physically present is unit D-17. The supplied calibration readiness record identifies unit D-71. Other equipment requirements are verified."
           },
           {
             name: "PPE / Respirator",
             tagClass: "ppe",
-            status: "Wearer Mismatch",
-            statusClass: "hold",
             details: "Required items and physical condition checks are confirmed. The assigned worker entering the space is Linh, but the supplied wearer-specific fit-test confirmation identifies Minh. No applicable confirmation for Linh is available."
           }
         ],
-        contextNote: "Final start authorisation remains pending the resolution and verification of outstanding readiness requirements.",
         q1: {
           prompt: "Considering all three readiness areas, what is your overall decision?",
           options: [
@@ -618,28 +658,21 @@ const SCENARIO_CLUSTERS = [
           {
             name: "Site Conditions",
             tagClass: "site",
-            status: "Verified",
-            statusClass: "ready",
             details: "The site remains unchanged; all required site checks, perimeter signs, and exclusion zones remain verified."
           },
           {
             name: "Equipment",
             tagClass: "equip",
-            status: "Resolved & Verified",
-            statusClass: "ready",
             details: "The applicable calibration and inspection record for unit D-17 has been retrieved from records and verified against the actual item. All required checks are acceptable and complete."
           },
           {
             name: "PPE / Respirator",
             tagClass: "ppe",
-            status: "Resolved & Verified",
-            statusClass: "ready",
             details: "Linh’s valid, current quantitative fit-test confirmation has been retrieved and verified for the assigned facepiece. All required protection and wearer-readiness criteria are confirmed."
           }
         ],
-        contextNote: "The designated company authoriser has confirmed that the full pre-start requirements are complete and has formally issued the required start authorisation. No other issue remains open.",
         q1: {
-          prompt: "Based on the updated evidence and completed start authorisation, what is your overall decision now?",
+          prompt: "Based on the updated evidence and completed start authorization, what is your overall decision now?",
           options: [
             { id: "A", text: "Proceed" },
             { id: "B", text: "Hold for Verification" },
@@ -666,8 +699,9 @@ const SCENARIO_CLUSTERS = [
     ]
   },
   {
-    id: "cluster-2",
-    title: "Scenario Cluster 2: Readiness Review (Area C)",
+    id: "scenario-2",
+    code: "02",
+    title: "02 · Changing conditions",
     briefing: "You are reviewing pre-start preparation for a fumigation operation in Area C. The contractor team reports that site preparation is nearly complete and requests immediate sign-off. Assess all three readiness areas and determine the next action.",
     rounds: [
       {
@@ -677,26 +711,19 @@ const SCENARIO_CLUSTERS = [
           {
             name: "Site Conditions",
             tagClass: "site",
-            status: "Critical Failure",
-            statusClass: "stop",
             details: "The current inspection confirms that a mandatory security access barrier is completely absent. The exercise procedure explicitly requires escalation for this condition."
           },
           {
             name: "Equipment",
             tagClass: "equip",
-            status: "Verified",
-            statusClass: "ready",
             details: "Required equipment, item serial identities, condition checks, and all applicable calibration readiness records are verified."
           },
           {
             name: "PPE / Respirator",
             tagClass: "ppe",
-            status: "Evidence Missing",
-            statusClass: "hold",
             details: "Required items and physical condition checks are confirmed. Worker An is assigned respirator model R-22, but An’s applicable wearer-readiness fit-test confirmation cannot be located."
           }
         ],
-        contextNote: "Final start authorisation has NOT been issued.",
         q1: {
           prompt: "Considering all three readiness areas, what is your overall decision?",
           options: [
@@ -729,26 +756,19 @@ const SCENARIO_CLUSTERS = [
           {
             name: "Site Conditions",
             tagClass: "site",
-            status: "Corrected & Cleared",
-            statusClass: "ready",
             details: "The barrier is installed. A physical re-inspection verifies that the barrier requirement is fully met. The designated safety manager has cleared the site no-go issue through the prescribed correction and review process."
           },
           {
             name: "Equipment",
             tagClass: "equip",
-            status: "Verified",
-            statusClass: "ready",
             details: "Equipment and required calibration records remain unchanged and fully verified."
           },
           {
             name: "PPE / Respirator",
             tagClass: "ppe",
-            status: "Still Unverified",
-            statusClass: "hold",
             details: "An’s required fit-test confirmation is still unavailable. When questioned, An states: 'I used this exact respirator model on the previous job without any problem.'"
           }
         ],
-        contextNote: "The exercise procedure permits reassessment after the site no-go issue is cleared. Final start authorisation remains pending the unresolved protection requirement.",
         q1: {
           prompt: "The site issue has been verified closed, but the PPE evidence gap remains. What is your overall decision now?",
           options: [
@@ -763,13 +783,13 @@ const SCENARIO_CLUSTERS = [
           options: [
             { id: "A", text: "Accept An’s previous experience and mark the remaining PPE requirement as ready." },
             { id: "B", text: "Record the verified barrier correction as closure of all readiness issues." },
-            { id: "C", text: "Obtain and verify An’s applicable wearer-readiness evidence, then reassess outstanding requirements and complete the remaining authorisation process." }
+            { id: "C", text: "Obtain and verify An’s applicable wearer-readiness evidence, then reassess outstanding requirements and complete the remaining authorization process." }
           ],
           correct: "C"
         },
         explanation: {
           decision: "B — Hold for Verification",
-          action: "C — Obtain and verify An’s applicable wearer-readiness evidence, then reassess outstanding requirements and complete the remaining authorisation process.",
+          action: "C — Obtain and verify An’s applicable wearer-readiness evidence, then reassess outstanding requirements and complete the remaining authorization process.",
           details: "The site failure was formally corrected, verified, and cleared by the designated authority. The remaining hurdle is that An's required respirator fit-test confirmation is unverified. An's verbal claim of prior experience does not replace documented evidence. Since there is no confirmed defect or shortage, the correct posture is Hold for Verification.",
           competencyNote: "Crucial supervisory insight: This scenario intentionally concludes at Hold! Fixing the largest high-visibility hazard does not grant permission to begin when an unverified life-safety requirement remains open."
         }
