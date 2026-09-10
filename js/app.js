@@ -57,13 +57,13 @@ document.addEventListener("DOMContentLoaded", () => {
       navStepScenarios.classList.toggle("locked", !domainDone);
       navStepScenarios.title = domainDone 
         ? "Go to Integrated Scenarios" 
-        : "Vui lòng hoàn thành tất cả 6 tình huống Domain Practice trước";
+        : "Please complete all 6 Domain Practice cases before advancing to Scenarios.";
     }
   }
 
   function switchView(viewName) {
     if (viewName === "scenarios" && !isDomainPracticeCompleted()) {
-      alert("Bạn cần hoàn thành tất cả 6 tình huống trong Domain Practice trước khi qua phần Scenarios!");
+      alert("Please complete all 6 cases in Domain Practice before advancing to Scenarios.");
       switchView("quiz");
       return;
     }
@@ -106,7 +106,7 @@ document.addEventListener("DOMContentLoaded", () => {
   navStepDomain?.addEventListener("click", () => switchView("quiz"));
   navStepScenarios?.addEventListener("click", () => {
     if (!isDomainPracticeCompleted()) {
-      alert("Bạn cần hoàn thành tất cả 6 tình huống trong Domain Practice trước khi qua phần Scenarios!");
+      alert("Please complete all 6 cases in Domain Practice before advancing to Scenarios.");
       return;
     }
     switchView("scenarios");
@@ -520,7 +520,7 @@ document.addEventListener("DOMContentLoaded", () => {
         renderQuizQuestion(index + 1);
       } else {
         if (!isDomainPracticeCompleted()) {
-          alert("Bạn cần hoàn thành tất cả 6 tình huống trong Domain Practice trước khi qua phần Scenarios!");
+          alert("Please complete all 6 cases in Domain Practice before advancing to Scenarios.");
           return;
         }
         switchView("scenarios");
