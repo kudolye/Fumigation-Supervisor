@@ -446,9 +446,6 @@ document.addEventListener("DOMContentLoaded", () => {
           ← Previous Case
         </button>
         <div style="display: flex; gap: 0.75rem;">
-          <button class="btn-secondary btn-handbook-quick" id="btn-view-hb-inline">
-            📖 View Guide
-          </button>
           <button class="btn-primary" id="btn-quiz-submit" ${currentAnswer.submitted ? "style='display:none;'" : ""}>
             Submit Decision
           </button>
@@ -479,7 +476,6 @@ document.addEventListener("DOMContentLoaded", () => {
       });
     });
 
-    document.getElementById("btn-view-hb-inline")?.addEventListener("click", () => handbookDrawer?.classList.add("open"));
     document.getElementById("btn-quiz-prev")?.addEventListener("click", () => {
       if (index > 0) renderQuizQuestion(index - 1);
     });
@@ -643,10 +639,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
       <div id="scenario-feedback-mount"></div>
 
-      <div class="test-actions-footer">
-        <button class="btn-secondary btn-handbook-quick" id="btn-view-hb-scenario">
-          📖 View Framework
-        </button>
+      <div class="test-actions-footer" style="display: flex; justify-content: flex-end;">
         <div style="display: flex; gap: 0.75rem;">
           <button class="btn-primary" id="btn-scenario-submit" ${currentAnswer.submitted ? "style='display:none;'" : ""}>
             Submit Decision
@@ -677,8 +670,6 @@ document.addEventListener("DOMContentLoaded", () => {
         state.scenarioAnswers[answerKey] = currentAnswer;
       });
     });
-
-    document.getElementById("btn-view-hb-scenario")?.addEventListener("click", () => handbookDrawer?.classList.add("open"));
 
     document.getElementById("btn-scenario-submit")?.addEventListener("click", () => {
       if (!currentAnswer.q1 || !currentAnswer.q2) {
