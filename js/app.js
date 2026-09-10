@@ -258,12 +258,53 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   // =========================================================================
-  // Handbook Rendering
+  // Handbook Rendering & Scrollspy Tracking
   // =========================================================================
+  let isManualHandbookScroll = false;
+  let manualScrollTimeout = null;
+
+  function updateHandbookScrollspy() {
+    if (state.currentView !== "handbook" || isManualHandbookScroll) return;
+
+    const sections = HANDBOOK_DATA.sections.map((sec) => document.getElementById(sec.id)).filter(Boolean);
+    if (!sections.length) return;
+
+    // Viewport target line (offset from top for sticky header)
+    const scrollPos = window.scrollY + 160;
+
+    let currentSecId = sections[0].id;
+    for (let i = 0; i < sections.length; i++) {
+      const sec = sections[i];
+      if (sec.offsetTop <= scrollPos) {
+        currentSecId = sec.id;
+      } else {
+        break;
+      }
+    }
+
+    // Check if scrolled near bottom of page (highlight section 7)
+    if ((window.innerHeight + window.scrollY) >= (document.documentElement.scrollHeight - 160)) {
+      currentSecId = sections[sections.length - 1].id;
+    }
+
+    document.querySelectorAll(".handbook-nav-link").forEach((link) => {
+      const href = link.getAttribute("href");
+      const isActive = (href === `#${currentSecId}`);
+      link.classList.toggle("active", isActive);
+    });
+  }
+
+  window.addEventListener("scroll", updateHandbookScrollspy, { passive: true });
+
   function renderHandbookContent() {
     const container = document.getElementById("handbook-sections-container");
     const navList = document.getElementById("handbook-nav-list");
-    if (!container || !navList || container.children.length > 0) return;
+    if (!container || !navList) return;
+
+    if (container.children.length > 0) {
+      updateHandbookScrollspy();
+      return;
+    }
 
     navList.innerHTML = "";
     container.innerHTML = "";
@@ -276,9 +317,25 @@ document.addEventListener("DOMContentLoaded", () => {
       a.textContent = `${sec.number}. ${sec.title}`;
       a.addEventListener("click", (e) => {
         e.preventDefault();
+        isManualHandbookScroll = true;
         document.querySelectorAll(".handbook-nav-link").forEach((link) => link.classList.remove("active"));
         a.classList.add("active");
-        document.getElementById(sec.id)?.scrollIntoView({ behavior: "smooth" });
+
+        const targetEl = document.getElementById(sec.id);
+        if (targetEl) {
+          const headerOffset = 130;
+          const elementPosition = targetEl.getBoundingClientRect().top;
+          const offsetPosition = elementPosition + window.pageYOffset - headerOffset;
+          window.scrollTo({
+            top: offsetPosition,
+            behavior: "smooth"
+          });
+        }
+
+        clearTimeout(manualScrollTimeout);
+        manualScrollTimeout = setTimeout(() => {
+          isManualHandbookScroll = false;
+        }, 800);
       });
       li.appendChild(a);
       navList.appendChild(li);
@@ -298,7 +355,30 @@ document.addEventListener("DOMContentLoaded", () => {
       container.appendChild(card);
     });
 
+    // Bottom CTA Card: Advance to Domain Practice
+    const nextCard = document.createElement("div");
+    nextCard.className = "handbook-footer-cta";
+    nextCard.innerHTML = `
+      <div class="handbook-footer-info">
+        <div class="footer-step-tag">STEP 02 OF 03</div>
+        <h3 class="footer-cta-title">Ready for Domain Practice?</h3>
+        <p class="footer-cta-desc">Test your operational decision-making across real field evidence in Site Conditions, Equipment, and PPE readiness.</p>
+      </div>
+      <button class="btn-cta-domain" id="btn-handbook-next-domain">
+        <span>Start Domain Practice →</span>
+      </button>
+    `;
+    container.appendChild(nextCard);
+
+    document.getElementById("btn-handbook-next-domain")?.addEventListener("click", () => {
+      switchView("quiz");
+    });
+    document.getElementById("btn-sidebar-next-domain")?.addEventListener("click", () => {
+      switchView("quiz");
+    });
+
     initInteractiveChecklist();
+    updateHandbookScrollspy();
   }
 
   // =========================================================================
