@@ -1295,57 +1295,36 @@ document.addEventListener("DOMContentLoaded", () => {
           <span class="bookmark-ribbon-icon">🔖</span>
         </div>
 
-        <div class="next-shift-grid">
-          <!-- Left: 4 numbered checks -->
-          <div class="four-checks-list">
-            <div class="four-check-item">
-              <span class="check-num-badge">01</span>
-              <div class="check-item-text-col">
-                <strong>Check all three domains</strong>
-                <p>Site conditions, equipment and PPE / respirator. One ready domain does not clear the whole job.</p>
-              </div>
-            </div>
-
-            <div class="four-check-item">
-              <span class="check-num-badge">02</span>
-              <div class="check-item-text-col">
-                <strong>Match the evidence</strong>
-                <p>Confirm the current job, equipment ID, assigned wearer and required readiness status.</p>
-              </div>
-            </div>
-
-            <div class="four-check-item">
-              <span class="check-num-badge">03</span>
-              <div class="check-item-text-col">
-                <strong>Classify before you decide</strong>
-                <p>Distinguish unverified evidence from confirmed failure. Apply the approved hold or escalation rule.</p>
-              </div>
-            </div>
-
-            <div class="four-check-item">
-              <span class="check-num-badge">04</span>
-              <div class="check-item-text-col">
-                <strong>Recheck after every change</strong>
-                <p>Review every outstanding issue before updating the overall decision. Stay within your authority.</p>
-              </div>
+        <div class="four-checks-grid">
+          <div class="four-check-item">
+            <span class="check-num-badge">01</span>
+            <div class="check-item-text-col">
+              <strong>Check all three domains</strong>
+              <p>Site conditions, equipment and PPE / respirator. One ready domain does not clear the whole job.</p>
             </div>
           </div>
 
-          <!-- Right: Personal Review Focus Box -->
-          <div class="personal-review-card">
-            <div class="review-focus-tag">YOUR PERSONAL REVIEW FOCUS</div>
-            <h3 class="review-focus-title">One issue resolved.<br>What is still open?</h3>
-            <p class="review-focus-p">
-              In Scenario 2, the site issue was corrected, but the PPE record was still unverified. That remaining gap prevented a Proceed decision.
-            </p>
+          <div class="four-check-item">
+            <span class="check-num-badge">02</span>
+            <div class="check-item-text-col">
+              <strong>Match the evidence</strong>
+              <p>Confirm the current job, equipment ID, assigned wearer and required readiness status.</p>
+            </div>
+          </div>
 
-            <div class="expected-change-subbox">
-              <div class="expected-change-label">SCENARIO 2 · EXPECTED DECISION CHANGE</div>
-              <div class="decision-arrow-row">
-                <span class="badge-no-go">Do Not Start & Escalate</span>
-                <span style="color: #64748b; font-weight: 800;">→</span>
-                <span class="badge-hold-change">Hold for Verification</span>
-              </div>
+          <div class="four-check-item">
+            <span class="check-num-badge">03</span>
+            <div class="check-item-text-col">
+              <strong>Classify before you decide</strong>
+              <p>Distinguish unverified evidence from confirmed failure. Apply the approved hold or escalation rule.</p>
+            </div>
+          </div>
+
+          <div class="four-check-item">
+            <span class="check-num-badge">04</span>
+            <div class="check-item-text-col">
+              <strong>Recheck after every change</strong>
+              <p>Review every outstanding issue before updating the overall decision. Stay within your authority.</p>
             </div>
           </div>
         </div>
