@@ -1,0 +1,270 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Operational Readiness Training for Fumigation Supervisors</title>
+  <meta name="description" content="Supervisory pre-start verification, site assessment, equipment checks, PPE and respirator readiness, and operational escalation protocols for fumigation supervisors.">
+  <link rel="stylesheet" href="css/styles.css">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>☣️</text></svg>">
+</head>
+<body>
+
+  <!-- =========================================================================
+       Site Header & Global Navigation Bar
+       ========================================================================= -->
+  <header class="site-header">
+    <div class="header-container">
+      <div class="brand-wrapper">
+        <div class="brand-hazard-badge">☣ SAFETY-READY</div>
+        <div class="brand-text-col">
+          <span class="brand-title">FUMIGATION OPERATIONAL READINESS</span>
+          <span class="brand-subtitle">Supervisory Pre-Start Verification System</span>
+        </div>
+      </div>
+
+      <!-- Navigation Tabs -->
+      <nav class="header-nav" aria-label="Main Navigation">
+        <button class="nav-tab-btn active" data-view="hero" id="nav-hero">
+          <span>Overview</span>
+        </button>
+        <button class="nav-tab-btn" data-view="handbook" id="nav-handbook">
+          <span>Handbook</span>
+        </button>
+        <button class="nav-tab-btn" data-view="quiz" id="nav-quiz">
+          <span>Decision Quiz</span>
+        </button>
+        <button class="nav-tab-btn" data-view="scenarios" id="nav-scenarios">
+          <span>Interactive Scenarios</span>
+        </button>
+        <button class="nav-tab-btn" data-view="dashboard" id="nav-dashboard">
+          <span>Readiness Dashboard</span>
+        </button>
+      </nav>
+
+      <!-- Quick Actions -->
+      <div class="header-actions">
+        <button class="btn-handbook-quick" id="btn-open-drawer" title="Open Quick Handbook Drawer">
+          📖 <span>Quick Handbook</span>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- =========================================================================
+       Main Content Views
+       ========================================================================= -->
+  <main class="main-wrapper">
+
+    <!-- View 1: Hero Landing (READY TO START?) -->
+    <section class="page-view active" id="view-hero">
+      <div class="hero-stage">
+        <div class="step-card">
+          <div class="hero-tag">OPERATIONAL READINESS MODULE • FUMIGATION SAFETY STANDARD</div>
+          <h1 class="hero-main-title">READY TO START?</h1>
+          <div class="hero-main-subtitle">Operational Readiness Training for Fumigation Supervisors</div>
+          
+          <p style="color: var(--color-text-secondary); font-size: 1.05rem; line-height: 1.6; max-width: 780px;">
+            Welcome to the operational verification gateway. Before hazardous gas introduction begins, supervisors must cross-examine physical site conditions, equipment certificates, and respirator readiness.
+          </p>
+
+          <div class="hero-action-box">
+            <div class="hero-cue">
+              <span style="font-size: 1.4rem;">👉</span>
+              <span>Proceed to the supervisory briefing and role responsibilities.</span>
+            </div>
+            <button class="btn-primary-start" id="btn-hero-next">
+              <span>Click to Next</span>
+              <span style="font-size: 1.2rem;">→</span>
+            </button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- View 2: Role & Description + Action Portals -->
+    <section class="page-view" id="view-role">
+      <div class="hero-stage role-overview-stage">
+        <!-- Role Definition -->
+        <div class="briefing-box">
+          <div class="briefing-label">Assigned Authority & Mandate</div>
+          <h2 class="briefing-title">Role: Fumigation Operational Supervisor</h2>
+          <div class="briefing-content">
+            As the supervisor, your responsibility is to review the team’s preparation evidence, identify unresolved requirements, and make a readiness decision within your assigned authority.
+          </div>
+        </div>
+
+        <!-- Operational Scope & Description -->
+        <div class="briefing-box" style="border-left-color: #f59e0b;">
+          <div class="briefing-label" style="color: #f59e0b;">Verification Scope</div>
+          <h2 class="briefing-title">Description</h2>
+          <div class="briefing-content">
+            After workers complete preparation and initial checks, supervisors need to cross-check the evidence and verify readiness before fumigation begins. Learn to assess site conditions, equipment, and PPE/respirator readiness—and decide what needs to happen next—through a practical handbook and interactive scenarios.
+          </div>
+        </div>
+
+        <!-- Two Core Pathways -->
+        <div class="two-choice-grid">
+          <!-- Card 1: Operational Handbook -->
+          <div class="choice-portal-card handbook-card" id="btn-portal-handbook">
+            <div>
+              <div class="portal-icon">📘</div>
+              <h3 class="portal-title">Preparation Readiness Handbook</h3>
+              <p class="portal-desc">
+                Review the 4-step readiness framework (Check, Identify, Classify, Decide), inspection criteria for the 3 key areas, and quick reference checklists.
+              </p>
+            </div>
+            <div class="portal-btn">
+              <span>Explore Handbook</span>
+              <span>→</span>
+            </div>
+          </div>
+
+          <!-- Card 2: Interactive Testing -->
+          <div class="choice-portal-card testing-card" id="btn-portal-testing">
+            <div>
+              <div class="portal-icon">🎯</div>
+              <h3 class="portal-title">Interactive Testing</h3>
+              <p class="portal-desc">
+                Evaluate real field evidence dossiers across 6 Decision Quizzes and 2 multi-round Interactive Scenarios to earn supervisory pre-start certification.
+              </p>
+            </div>
+            <div class="portal-btn">
+              <span>Start Testing</span>
+              <span>→</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- View 3: Operational Handbook -->
+    <section class="page-view" id="view-handbook">
+      <div class="handbook-layout">
+        <!-- Sticky Sidebar Navigation -->
+        <aside class="handbook-sidebar">
+          <div class="sidebar-title">Handbook Table of Contents</div>
+          <ul class="handbook-nav-list" id="handbook-nav-list">
+            <!-- Rendered dynamically -->
+          </ul>
+        </aside>
+
+        <!-- Main Handbook Sections Column -->
+        <div class="handbook-content-col" id="handbook-sections-container">
+          <!-- Rendered dynamically from js/data.js -->
+        </div>
+      </div>
+    </section>
+
+    <!-- View 4: Part A - Decision Quiz -->
+    <section class="page-view" id="view-quiz">
+      <div class="testing-header-banner">
+        <div>
+          <span class="test-badge">PART A: READINESS DECISION QUIZ</span>
+          <h2 class="test-title">Field Evidence Verification Cases</h2>
+          <p class="test-desc">
+            You are reviewing a team’s pre-start readiness. Check the site, equipment, and PPE evidence, then decide what should happen next.
+          </p>
+        </div>
+      </div>
+
+      <!-- Progress Ribbon -->
+      <div class="progress-ribbon" id="quiz-progress-ribbon">
+        <!-- Rendered dynamically -->
+      </div>
+
+      <!-- Quiz Mount -->
+      <div id="quiz-card-container">
+        <!-- Rendered dynamically -->
+      </div>
+    </section>
+
+    <!-- View 5: Part B - Interactive Scenarios -->
+    <section class="page-view" id="view-scenarios">
+      <div class="testing-header-banner">
+        <div>
+          <span class="test-badge">PART B: MULTI-ROUND INTERACTIVE SCENARIOS</span>
+          <h2 class="test-title">Supervisory Pre-Start Simulation</h2>
+          <p class="test-desc">
+            Synthesize conditions across all three readiness areas simultaneously. Handle real-time updates and make decisive pre-start determinations.
+          </p>
+        </div>
+      </div>
+
+      <!-- Progress Ribbon -->
+      <div class="progress-ribbon" id="scenario-progress-ribbon">
+        <!-- Rendered dynamically -->
+      </div>
+
+      <!-- Scenario Mount -->
+      <div id="scenario-card-container">
+        <!-- Rendered dynamically -->
+      </div>
+    </section>
+
+    <!-- View 6: Dual Dashboard -->
+    <section class="page-view" id="view-dashboard">
+      <div class="dashboard-stage" id="dashboard-content-mount">
+        <!-- Rendered dynamically with Criteria Met & Review Required options -->
+      </div>
+    </section>
+
+  </main>
+
+  <!-- =========================================================================
+       Quick Handbook Slide-Over Drawer (Accessible Anytime During Testing)
+       ========================================================================= -->
+  <div class="drawer-backdrop" id="handbook-drawer">
+    <div class="drawer-panel" role="dialog" aria-modal="true" aria-labelledby="drawer-title">
+      <div class="drawer-header">
+        <div class="drawer-title-col">
+          <span id="drawer-title">FIELD REFERENCE</span>
+          <h4>Operational Readiness Handbook</h4>
+        </div>
+        <button class="drawer-close-btn" id="btn-close-drawer" aria-label="Close Drawer">&times;</button>
+      </div>
+      <div class="drawer-body">
+        
+        <div class="drawer-quick-sec">
+          <h5><span>1.</span> Framework Pipeline</h5>
+          <p style="font-size: 0.85rem; color: #cbd5e1; margin-bottom: 0.5rem;">
+            <strong>CHECK</strong> (Site, Equipment, PPE) → <strong>IDENTIFY</strong> (Gaps & Mismatches) → <strong>CLASSIFY</strong> (Ready / Not Verified / Not Ready) → <strong>DECIDE</strong> (Proceed / Hold / Escalate)
+          </p>
+        </div>
+
+        <div class="drawer-quick-sec">
+          <h5><span>2.</span> The Three Decisions</h5>
+          <ul style="padding-left: 1.2rem; font-size: 0.85rem; color: #cbd5e1; display: flex; flex-direction: column; gap: 0.45rem;">
+            <li><strong>Proceed:</strong> All applicable readiness requirements are verified, outstanding issues closed, start authorisation complete.</li>
+            <li><strong>Hold for Verification:</strong> Requirement cannot yet be confirmed; keep operation on hold while obtaining reliable evidence.</li>
+            <li><strong>Do Not Start & Escalate:</strong> Critical requirement failed, procedure mandates escalation, or issue exceeds authority.</li>
+          </ul>
+        </div>
+
+        <div class="drawer-quick-sec">
+          <h5><span>3.</span> Core Rules of Thumb</h5>
+          <ul style="padding-left: 1.2rem; font-size: 0.85rem; color: #cbd5e1; display: flex; flex-direction: column; gap: 0.45rem;">
+            <li>Both <strong>Hold for Verification</strong> and <strong>Do Not Start & Escalate</strong> mean the operation MUST NOT begin.</li>
+            <li>A verbal promise ("we will fix it later" or "I used it yesterday") is NOT verified evidence.</li>
+            <li>A completed check in one area (e.g., Equipment) does not authorise the entire job if other areas remain incomplete.</li>
+          </ul>
+        </div>
+
+        <div class="drawer-quick-sec">
+          <h5><span>4.</span> Common Quiz Options for Question 1</h5>
+          <p style="font-size: 0.85rem; color: #cbd5e1;">
+            <strong>A. Next Check:</strong> Requirement verified; proceed with remaining checks.<br>
+            <strong>B. Hold for Verification:</strong> Required evidence is missing, mismatched, or outdated.<br>
+            <strong>C. Do Not Start & Escalate:</strong> Confirmed critical no-go condition requiring escalation under procedure.
+          </p>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <!-- Scripts -->
+  <script src="js/data.js"></script>
+  <script src="js/app.js"></script>
+</body>
+</html>
